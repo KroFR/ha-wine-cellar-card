@@ -313,7 +313,6 @@ class WineCellarCard extends HTMLElement {
           box-shadow: var(--ha-card-box-shadow, none);
           font-family: var(--paper-font-body1_-_font-family, inherit);
         }
-        .wrap { container-type: inline-size; }
         .header { display: flex; align-items: center; gap: 10px; }
         .h-icon {
           display: flex; align-items: center; justify-content: center;
@@ -413,12 +412,6 @@ class WineCellarCard extends HTMLElement {
         .content-row:has(> .cellar-visual.hidden) .ring-box { width: 84px; height: 84px; }
         .content-row:has(> .cellar-visual.hidden) .ring-temp { font-size: 17px; }
         .hidden { display: none !important; }
-        @container (max-width: 320px) {
-          .content-row { flex-direction: column; }
-          .cellar-visual { width: 88px; }
-          .zone-panel { box-sizing: border-box; width: 100%; }
-          .panel { grid-template-columns: 1fr 1fr; row-gap: 10px; }
-        }
       </style>
 
       <ha-card>
