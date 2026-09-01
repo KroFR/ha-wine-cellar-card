@@ -1,4 +1,4 @@
-# Wine Cellar Card
+# 🍷 Wine Cellar Card
 
 A custom Lovelace card for Home Assistant that displays your **Haier hOn wine cellar** at a glance. It shows temperature and humidity for two independent zones, plus mode, program, light status, and error alerts.
 
@@ -6,7 +6,7 @@ A custom Lovelace card for Home Assistant that displays your **Haier hOn wine ce
 |---|---|
 | <img width="501" height="330" alt="image" src="https://github.com/user-attachments/assets/840be4ef-15c9-4b36-be2e-c99e067c879a" /> | <img width="501" height="330" alt="image" src="https://github.com/user-attachments/assets/4a9c36b9-6ecf-4afa-8108-4063eb94a3a3" /> |
 
-### Features
+### ✨ Features
 - Dual-zone temperature rings with target values
 - Humidity, mode, and program display
 - Light toggle and error banner
@@ -14,14 +14,14 @@ A custom Lovelace card for Home Assistant that displays your **Haier hOn wine ce
 - Ligth and Dark mode support
 - Multilingual support and auto-detection (English, French, Spanish, Italian, Portuguese, German, Dutch)
 
-### Prerequisites 
+### ℹ️ Prerequisites 
 
 This card was built to pair with the [hOn integration](https://github.com/gvigroux/hon), which exposes Haier wine cellars in Home Assistant. That said, it's not locked to that integration. As long as your entities use the same types (a binary sensor for status, sensors for temperature/humidity, etc.), the card will work with any integration that exposes them.
 
 Tested with Wine Cellar model:
 - HWS42GDAU1
 
-## Installation
+## 📦 Installation
 
 ### HACS (recommended)
 1. Open **HACS** in Home Assistant.
@@ -39,7 +39,7 @@ Tested with Wine Cellar model:
 4. Select **Add resource**, set the URL to `/hacsfiles/wine-cellar-card/wine-cellar-card.js?v=1`, and set resource type to **JavaScript module**.
 5. Refresh your browser.
 
-## Configuration
+## ⚙️ Configuration
 
 | Name | Type | Required | Default | Description |
 |---|---|---|---|---|
@@ -62,7 +62,7 @@ Tested with Wine Cellar model:
 | `zone1_min` / `zone2_min` | number | no | `5` | Minimum temperature for the ring gauge |
 | `zone1_max` / `zone2_max` | number | no | `20` | Maximum temperature for the ring gauge |
 
-## Usage examples
+## 📝 Usage examples
 
 ### Full dual-zone setup
 The complete configuration, with both zones, mode mapping, and program display.
