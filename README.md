@@ -67,8 +67,9 @@ Tested with Wine Cellar model:
 ### Full dual-zone setup
 The complete configuration, with both zones, mode mapping, and program display.
 
-<img width="501" height="330" alt="image" src="https://github.com/user-attachments/assets/840be4ef-15c9-4b36-be2e-c99e067c879a" />
-<img width="501" height="330" alt="image" src="https://github.com/user-attachments/assets/4a9c36b9-6ecf-4afa-8108-4063eb94a3a3" />
+| Light Theme | Dark Theme |
+|---|---|
+| <img width="501" height="330" alt="image" src="https://github.com/user-attachments/assets/840be4ef-15c9-4b36-be2e-c99e067c879a" /> | <img width="501" height="330" alt="image" src="https://github.com/user-attachments/assets/4a9c36b9-6ecf-4afa-8108-4063eb94a3a3" /> |
 
 ```yaml
 type: custom:wine-cellar-card
@@ -101,8 +102,9 @@ cellar_visual_position: center
 ### Minimal setup
 Only the required entity, everything else falls back to defaults.
 
-<img width="501" height="250" alt="image" src="https://github.com/user-attachments/assets/ba4705d3-9da3-4abf-a0ef-581eb4f69b22" />
-<img width="501" height="250" alt="image" src="https://github.com/user-attachments/assets/c4826f7d-e7fb-4f95-9c6e-92a6fcb9f5f7" />
+| Light Theme | Dark Theme |
+|---|---|
+| <img width="501" height="250" alt="image" src="https://github.com/user-attachments/assets/ba4705d3-9da3-4abf-a0ef-581eb4f69b22" /> | <img width="501" height="250" alt="image" src="https://github.com/user-attachments/assets/c4826f7d-e7fb-4f95-9c6e-92a6fcb9f5f7" /> |
 
 ```yaml
 type: custom:wine-cellar-card
@@ -112,8 +114,9 @@ status_entity: binary_sensor.wine_cellar_status
 ### Single-zone cellar
 Leave zone 2 fields empty and the card hides that panel automatically.
 
-<img width="501" height="250" alt="image" src="https://github.com/user-attachments/assets/27223180-5b8f-4145-b272-b61f3aeca8bc" />
-<img width="501" height="250" alt="image" src="https://github.com/user-attachments/assets/e2f55a94-cdf5-499a-847a-a5f3cad52590" />
+| Light Theme | Dark Theme |
+|---|---|
+| <img width="501" height="250" alt="image" src="https://github.com/user-attachments/assets/27223180-5b8f-4145-b272-b61f3aeca8bc" /> | <img width="501" height="250" alt="image" src="https://github.com/user-attachments/assets/e2f55a94-cdf5-499a-847a-a5f3cad52590" /> |
 
 ```yaml
 type: custom:wine-cellar-card
@@ -130,8 +133,9 @@ zone1_max: 20
 ### Compact layout without illustration
 Hide the cellar illustration to give more room to the temperature rings, ideal for narrow dashboard columns.
 
-<img width="501" height="250" alt="image" src="https://github.com/user-attachments/assets/0f867418-5f91-4525-9b9b-595b38e77832" />
-<img width="501" height="250" alt="image" src="https://github.com/user-attachments/assets/0175e388-0f7f-4f58-8ae1-cc824a939be3" />
+| Light Theme | Dark Theme |
+|---|---|
+| <img width="501" height="250" alt="image" src="https://github.com/user-attachments/assets/0f867418-5f91-4525-9b9b-595b38e77832" /> | <img width="501" height="250" alt="image" src="https://github.com/user-attachments/assets/0175e388-0f7f-4f58-8ae1-cc824a939be3" /> |
 
 ```yaml
 type: custom:wine-cellar-card
@@ -152,8 +156,9 @@ hide_cellar_visual: true
 ### Illustration on the right, forced language
 Move the illustration to the right side and force French regardless of your Home Assistant profile language.
 
-<img width="501" height="250" alt="image" src="https://github.com/user-attachments/assets/14a8ed62-ebeb-4992-bbcc-e4a94209583b" />
-<img width="501" height="250" alt="image" src="https://github.com/user-attachments/assets/9d6cd1a5-64f9-4fef-a8d6-c75088e2fa2c" />
+| Light Theme | Dark Theme |
+|---|---|
+| <img width="501" height="250" alt="image" src="https://github.com/user-attachments/assets/14a8ed62-ebeb-4992-bbcc-e4a94209583b" /> | <img width="501" height="250" alt="image" src="https://github.com/user-attachments/assets/9d6cd1a5-64f9-4fef-a8d6-c75088e2fa2c" /> |
 
 ```yaml
 type: custom:wine-cellar-card
