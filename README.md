@@ -2,8 +2,9 @@
 
 A custom Lovelace card for Home Assistant that displays your **Haier hOn wine cellar** at a glance. It shows temperature and humidity for two independent zones, plus mode, program, light status, and error alerts.
 
-<img width="501" height="330" alt="image" src="https://github.com/user-attachments/assets/840be4ef-15c9-4b36-be2e-c99e067c879a" />
-<img width="501" height="330" alt="image" src="https://github.com/user-attachments/assets/4a9c36b9-6ecf-4afa-8108-4063eb94a3a3" />
+| Light Theme | Dark Theme |
+|---|---|
+| <img width="501" height="330" alt="image" src="https://github.com/user-attachments/assets/840be4ef-15c9-4b36-be2e-c99e067c879a" /> | <img width="501" height="330" alt="image" src="https://github.com/user-attachments/assets/4a9c36b9-6ecf-4afa-8108-4063eb94a3a3" /> |
 
 ### Features
 - Dual-zone temperature rings with target values
