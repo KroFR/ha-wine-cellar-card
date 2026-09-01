@@ -178,6 +178,6 @@ cellar_visual_position: right
 language: fr
 ```
 
-## License
+## 📄 License
 
 [<img width="78" height="20" alt="image" src="https://github.com/user-attachments/assets/c14c93d7-50c2-4726-9a47-77f6c466e5b5" />](https://github.com/KroFR/hon-wine-cellar-ha-card/blob/main/LICENSE)
