@@ -4,7 +4,7 @@
  * Dual-zone Lovelace card for a Haier hOn wine cellar.
  *
  * License: MIT
- * Version: 1.9.0
+ * Version: 1.0.0
  *
  */
 
