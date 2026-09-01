@@ -11,7 +11,7 @@ A custom Lovelace card for Home Assistant that displays your **Haier hOn wine ce
 - Humidity, mode, and program display
 - Light toggle and error banner
 - Configurable illustration position and hidden-state support
-- Ligth and Dark mode support
+- Light and Dark mode support
 - Multilingual support and auto-detection (English, French, Spanish, Italian, Portuguese, German, Dutch)
 
 ### ℹ️ Prerequisites 
