@@ -1,6 +1,6 @@
 # 🍷 Wine Cellar Card
 
-A custom Lovelace card for Home Assistant that displays your **Haier hOn wine cellar** at a glance. It shows temperature and humidity for two independent zones, plus mode, program, light status, and error alerts.
+A custom Lovelace card for [Home Assistant](https://www.home-assistant.io/) that displays your **Haier hOn wine cellar** at a glance. It shows temperature and humidity for two independent zones, plus mode, program, light status, and error alerts.
 
 | Light Theme | Dark Theme |
 |---|---|
@@ -27,7 +27,7 @@ Tested with Wine Cellar model:
 1. Open **HACS** in Home Assistant.
 2. Click on the three dots in the top right corner
 3. Select "Custom repositories"
-4. Add this repository URL ([https://github.com/KroFR/hon-wine-cellar-ha-card](https://github.com/KroFR/hon-wine-cellar-ha-card))
+4. Add this repository URL `https://github.com/KroFR/hon-wine-cellar-ha-card`
 5. Select "Dashboard"
 6. Click "Add"
 7. Search for "Wine Cellar Card" and install it
@@ -38,6 +38,12 @@ Tested with Wine Cellar model:
 3. Go to **Settings** > **Dashboards** > three-dot menu > **Resources**.
 4. Select **Add resource**, set the URL to `/hacsfiles/wine-cellar-card/wine-cellar-card.js?v=1`, and set resource type to **JavaScript module**.
 5. Refresh your browser.
+
+## Adding the card
+
+1. Edit any dashboard and select **Add Card**.
+2. Search for **Wine Cellar Card**, or select **Manual** and use the YAML shown below.
+3. Configure the entities either through the visual editor or directly in YAML.
 
 ## ⚙️ Configuration
 
