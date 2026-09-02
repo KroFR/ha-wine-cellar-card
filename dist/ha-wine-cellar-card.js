@@ -8,297 +8,306 @@
  */
 
 class WineCellarCard extends HTMLElement {
-  static STRINGS = {
-    en: {
-      name: "Wine cellar",
-      badge_on: "ON",
-      badge_off: "OFF",
-      badge_nodata: "NO DATA",
-      target: "Target",
-      env_temp: "Room temperature",
-      mode: "Mode",
-      program: "Program",
-      light_on: "Light on",
-      light_off: "Light off",
-      no_program: ["none", "unknown", "unavailable", ""],
-      error_title: "ERROR",
-      tip_light: "Cellar light",
-      locale: "en-GB",
-      decimal_separator: ".",
-    },
-    fr: {
-      name: "Cave à vin",
-      badge_on: "ALLUMÉE",
-      badge_off: "ÉTEINTE",
-      badge_nodata: "PAS DE DONNÉES",
-      target: "Consigne",
-      env_temp: "Température ambiante",
-      mode: "Mode",
-      program: "Programme",
-      light_on: "Lumière allumée",
-      light_off: "Lumière éteinte",
-      no_program: ["none", "unknown", "unavailable", ""],
-      error_title: "ERREUR",
-      tip_light: "Éclairage cave",
-      locale: "fr-FR",
-      decimal_separator: ",",
-    },
-    es: {
-      name: "Bodega de vinos",
-      badge_on: "ENCENDIDA",
-      badge_off: "APAGADA",
-      badge_nodata: "SIN DATOS",
-      target: "Consigna",
-      env_temp: "Temperatura ambiente",
-      mode: "Modo",
-      program: "Programa",
-      light_on: "Luz encendida",
-      light_off: "Luz apagada",
-      no_program: ["none", "unknown", "unavailable", ""],
-      error_title: "ERROR",
-      tip_light: "Luz de la bodega",
-      locale: "es-ES",
-      decimal_separator: ",",
-    },
-    it: {
-      name: "Cantina vini",
-      badge_on: "ACCESA",
-      badge_off: "SPENTA",
-      badge_nodata: "NESSUN DATO",
-      target: "Obiettivo",
-      env_temp: "Temperatura ambiente",
-      mode: "Modalità",
-      program: "Programma",
-      light_on: "Luce accesa",
-      light_off: "Luce spenta",
-      no_program: ["none", "unknown", "unavailable", ""],
-      error_title: "ERRORE",
-      tip_light: "Luce cantina",
-      locale: "it-IT",
-      decimal_separator: ",",
-    },
-    pt: {
-      name: "Adega de vinhos",
-      badge_on: "LIGADA",
-      badge_off: "DESLIGADA",
-      badge_nodata: "SEM DADOS",
-      target: "Alvo",
-      env_temp: "Temperatura ambiente",
-      mode: "Modo",
-      program: "Programa",
-      light_on: "Luz ligada",
-      light_off: "Luz desligada",
-      no_program: ["none", "unknown", "unavailable", ""],
-      error_title: "ERRO",
-      tip_light: "Luz da adega",
-      locale: "pt-PT",
-      decimal_separator: ",",
-    },
-    de: {
-      name: "Weinkühlschrank",
-      badge_on: "AN",
-      badge_off: "AUS",
-      badge_nodata: "KEINE DATEN",
-      target: "Sollwert",
-      env_temp: "Raumtemperatur",
-      mode: "Modus",
-      program: "Programm",
-      light_on: "Licht an",
-      light_off: "Licht aus",
-      no_program: ["none", "unknown", "unavailable", ""],
-      error_title: "FEHLER",
-      tip_light: "Kellerbeleuchtung",
-      locale: "de-DE",
-      decimal_separator: ",",
-    },
-    nl: {
-      name: "Wijnkelder",
-      badge_on: "AAN",
-      badge_off: "UIT",
-      badge_nodata: "GEEN DATA",
-      target: "Doel",
-      env_temp: "Omgevingstemperatuur",
-      mode: "Modus",
-      program: "Programma",
-      light_on: "Licht aan",
-      light_off: "Licht uit",
-      no_program: ["none", "unknown", "unavailable", ""],
-      error_title: "FOUT",
-      tip_light: "Kelderverlichting",
-      locale: "nl-NL",
-      decimal_separator: ",",
-    },
-  };
-
-  static DEFAULTS = {
-    zone1_label: "ZONE 1",
-    zone2_label: "ZONE 2",
-    zone1_min: 5,
-    zone1_max: 20,
-    zone2_min: 5,
-    zone2_max: 20,
-    cellar_visual_position: "left",
-    hide_cellar_visual: false,
-    no_error_states: [
-      "00", "0", "none", "no error", "aucune erreur",
-      "unknown", "unavailable", ""
-    ],
-  };
-
-  static STUB_MODE_NAMES = {
-    "0": "-",
-    "1": "Standard",
-    "2": "Eco",
-  };
-
-  static VISUAL_ORDER = {
-    left: { visual: 0, zone1: 1, zone2: 2 },
-    center: { visual: 1, zone1: 0, zone2: 2 },
-    right: { visual: 2, zone1: 0, zone2: 1 },
-  };
-
-  static getConfigElement() {
-    return document.createElement("wine-cellar-card-editor");
-  }
-
-  static getStubConfig() {
-    return {
-      name: "",
-      status_entity: "binary_sensor.wine_cellar_status",
-      error_entity: "",
-      light_entity: "",
-      env_temp_entity: "",
-      mode_entity: "",
-      mode_names: { ...WineCellarCard.STUB_MODE_NAMES },
-      program_name_entity: "",
-      zone1_label: "ZONE 1",
-      zone1_temp_entity: "",
-      zone1_target_entity: "",
-      zone1_humidity_entity: "",
-      zone1_min: 5,
-      zone1_max: 20,
-      zone2_label: "ZONE 2",
-      zone2_temp_entity: "",
-      zone2_target_entity: "",
-      zone2_humidity_entity: "",
-      zone2_min: 5,
-      zone2_max: 20,
-      cellar_visual_position: "left",
-      hide_cellar_visual: false,
-    };
-  }
-
-  setConfig(config) {
-    if (!config.status_entity) {
-      throw new Error("wine-cellar-card: status_entity is required");
-    }
-
-    this._config = {
-      ...WineCellarCard.DEFAULTS,
-      ...config,
-      mode_names: config.mode_names && typeof config.mode_names === "object"
-        ? config.mode_names
-        : {},
+    static STRINGS = {
+        en: {
+            name: "Wine cellar",
+            badge_on: "ON",
+            badge_off: "OFF",
+            badge_nodata: "NO DATA",
+            target: "Target",
+            env_temp: "Room temperature",
+            mode: "Mode",
+            program: "Program",
+            light_on: "Light on",
+            light_off: "Light off",
+            error_title: "ERROR",
+            tip_light: "Cellar light",
+        },
+        fr: {
+            name: "Cave à vin",
+            badge_on: "ALLUMÉE",
+            badge_off: "ÉTEINTE",
+            badge_nodata: "PAS DE DONNÉES",
+            target: "Consigne",
+            env_temp: "Température ambiante",
+            mode: "Mode",
+            program: "Programme",
+            light_on: "Lumière allumée",
+            light_off: "Lumière éteinte",
+            error_title: "ERREUR",
+            tip_light: "Éclairage cave",
+        },
+        es: {
+            name: "Bodega de vinos",
+            badge_on: "ENCENDIDA",
+            badge_off: "APAGADA",
+            badge_nodata: "SIN DATOS",
+            target: "Consigna",
+            env_temp: "Temperatura ambiente",
+            mode: "Modo",
+            program: "Programa",
+            light_on: "Luz encendida",
+            light_off: "Luz apagada",
+            error_title: "ERROR",
+            tip_light: "Luz de la bodega",
+        },
+        it: {
+            name: "Cantina vini",
+            badge_on: "ACCESA",
+            badge_off: "SPENTA",
+            badge_nodata: "NESSUN DATO",
+            target: "Obiettivo",
+            env_temp: "Temperatura ambiente",
+            mode: "Modalità",
+            program: "Programma",
+            light_on: "Luce accesa",
+            light_off: "Luce spenta",
+            error_title: "ERRORE",
+            tip_light: "Luce cantina",
+        },
+        pt: {
+            name: "Adega de vinhos",
+            badge_on: "LIGADA",
+            badge_off: "DESLIGADA",
+            badge_nodata: "SEM DADOS",
+            target: "Alvo",
+            env_temp: "Temperatura ambiente",
+            mode: "Modo",
+            program: "Programa",
+            light_on: "Luz ligada",
+            light_off: "Luz desligada",
+            error_title: "ERRO",
+            tip_light: "Luz da adega",
+        },
+        de: {
+            name: "Weinkühlschrank",
+            badge_on: "AN",
+            badge_off: "AUS",
+            badge_nodata: "KEINE DATEN",
+            target: "Sollwert",
+            env_temp: "Raumtemperatur",
+            mode: "Modus",
+            program: "Programm",
+            light_on: "Licht an",
+            light_off: "Licht aus",
+            error_title: "FEHLER",
+            tip_light: "Kellerbeleuchtung",
+        },
+        nl: {
+            name: "Wijnkelder",
+            badge_on: "AAN",
+            badge_off: "UIT",
+            badge_nodata: "GEEN DATA",
+            target: "Doel",
+            env_temp: "Omgevingstemperatuur",
+            mode: "Modus",
+            program: "Programma",
+            light_on: "Licht aan",
+            light_off: "Licht uit",
+            error_title: "FOUT",
+            tip_light: "Kelderverlichting",
+        },
     };
 
-    this._built = false;
+    static NO_PROGRAM_STATES = ["none", "unknown", "unavailable", ""];
 
-    if (this._hass) {
-      this._build();
-      this._update();
+    static RING_RADIUS = 39;
+    static RING_CIRCUMFERENCE = 2 * Math.PI * WineCellarCard.RING_RADIUS;
+
+    static DEFAULTS = {
+        zone1_label: "ZONE 1",
+        zone2_label: "ZONE 2",
+        zone1_min: 5,
+        zone1_max: 20,
+        zone2_min: 5,
+        zone2_max: 20,
+        cellar_visual_position: "left",
+        hide_cellar_visual: false,
+        no_error_states: [
+            "00", "0", "none", "no error", "aucune erreur",
+            "unknown", "unavailable", ""
+        ],
+    };
+
+    static STUB_MODE_NAMES = {
+        "0": "-",
+        "1": "Standard",
+        "2": "Eco",
+    };
+
+    static VISUAL_ORDER = {
+        left: {
+            visual: 0,
+            zone1: 1,
+            zone2: 2
+        },
+        center: {
+            visual: 1,
+            zone1: 0,
+            zone2: 2
+        },
+        right: {
+            visual: 2,
+            zone1: 0,
+            zone2: 1
+        },
+    };
+
+    static getConfigElement() {
+        return document.createElement("wine-cellar-card-editor");
     }
-  }
 
-  set hass(hass) {
-    this._hass = hass;
-    if (!this._built) this._build();
-    this._update();
-  }
-
-  getCardSize() {
-    return 4;
-  }
-
-  get _t() {
-    const strings = WineCellarCard.STRINGS;
-
-    const configured = String(this._config?.language || "").toLowerCase();
-    if (configured && strings[configured]) return strings[configured];
-
-    const profileLanguage = (
-      this._hass?.locale?.language || this._hass?.language || ""
-    ).toLowerCase();
-
-    if (profileLanguage) {
-      if (strings[profileLanguage]) return strings[profileLanguage];
-      const base = profileLanguage.split(/[-_]/)[0];
-      if (strings[base]) return strings[base];
+    static getStubConfig() {
+        return {
+            name: "",
+            status_entity: "binary_sensor.wine_cellar_status",
+            error_entity: "",
+            light_entity: "",
+            env_temp_entity: "",
+            mode_entity: "",
+            mode_names: {
+                ...WineCellarCard.STUB_MODE_NAMES
+            },
+            program_name_entity: "",
+            zone1_label: "ZONE 1",
+            zone1_temp_entity: "",
+            zone1_target_entity: "",
+            zone1_humidity_entity: "",
+            zone1_min: 5,
+            zone1_max: 20,
+            zone2_label: "ZONE 2",
+            zone2_temp_entity: "",
+            zone2_target_entity: "",
+            zone2_humidity_entity: "",
+            zone2_min: 5,
+            zone2_max: 20,
+            cellar_visual_position: "left",
+            hide_cellar_visual: false,
+        };
     }
 
-    return strings.en;
-  }
+    setConfig(config) {
+        if (!config.status_entity) {
+            throw new Error("wine-cellar-card: status_entity is required");
+        }
 
-  _st(entityId) {
-    return entityId ? this._hass?.states?.[entityId] : undefined;
-  }
+        this._config = {
+            ...WineCellarCard.DEFAULTS,
+            ...config,
+            mode_names: config.mode_names && typeof config.mode_names === "object"
+             ? config.mode_names
+             : {},
+        };
 
-  _num(entityId) {
-    const state = this._st(entityId);
-    if (!state) return null;
-    const value = Number.parseFloat(state.state);
-    return Number.isFinite(value) ? value : null;
-  }
+        this._built = false;
 
-  _fmtNum(value, digits = 1) {
-    const number = Number.parseFloat(value);
-    if (!Number.isFinite(number)) return null;
-
-    const formatted = digits > 0
-      ? String(Number.parseFloat(number.toFixed(digits)))
-      : String(Math.round(number));
-
-    return formatted.replace(".", this._t.decimal_separator);
-  }
-
-  _moreInfo(entityId) {
-    if (!entityId) return;
-
-    this.dispatchEvent(new CustomEvent("hass-more-info", {
-      detail: { entityId },
-      bubbles: true,
-      composed: true,
-    }));
-  }
-
-  _isLightOn(state) {
-    return ["on", "true"].includes(String(state ?? "").toLowerCase());
-  }
-
-  _onLightClick() {
-    const entityId = this._config.light_entity;
-    if (!entityId) return;
-
-    const domain = entityId.split(".")[0];
-    if (["light", "switch"].includes(domain)) {
-      this._hass.callService(domain, "toggle", { entity_id: entityId });
-    } else {
-      this._moreInfo(entityId);
+        if (this._hass) {
+            this._build();
+            this._update();
+        }
     }
-  }
 
-  _ringDasharray(fraction) {
-    const radius = 39;
-    const circumference = 2 * Math.PI * radius;
-    const safeFraction = Math.max(0, Math.min(1, fraction));
-    return `${(safeFraction * circumference).toFixed(1)} ${circumference.toFixed(1)}`;
-  }
+    set hass(hass) {
+        this._hass = hass;
+        if (!this._built)
+            this._build();
+        this._update();
+    }
 
-  _build() {
-    const config = this._config;
-    const text = this._t;
-    const root = this.shadowRoot || this.attachShadow({ mode: "open" });
+    getCardSize() {
+        return 4;
+    }
 
-    root.innerHTML = `
+    get _t() {
+        const strings = WineCellarCard.STRINGS;
+
+        const configured = String(this._config?.language || "").toLowerCase();
+        if (configured && strings[configured])
+            return strings[configured];
+
+        const profileLanguage = (
+            this._hass?.locale?.language || this._hass?.language || "").toLowerCase();
+
+        if (profileLanguage) {
+            if (strings[profileLanguage])
+                return strings[profileLanguage];
+            const base = profileLanguage.split(/[-_]/)[0];
+            if (strings[base])
+                return strings[base];
+        }
+
+        return strings.en;
+    }
+
+    _st(entityId) {
+        return entityId ? this._hass?.states?.[entityId] : undefined;
+    }
+
+    _num(entityId) {
+        const state = this._st(entityId);
+        if (!state)
+            return null;
+        const value = Number.parseFloat(state.state);
+        return Number.isFinite(value) ? value : null;
+    }
+
+    _fmtNum(value, digits = 1) {
+        const number = Number.parseFloat(value);
+        if (!Number.isFinite(number))
+            return null;
+
+        return new Intl.NumberFormat(this._hass?.locale?.language || "en", {
+            minimumFractionDigits: digits,
+            maximumFractionDigits: digits,
+        }).format(number);
+    }
+
+    _moreInfo(entityId) {
+        if (!entityId)
+            return;
+
+        this.dispatchEvent(new CustomEvent("hass-more-info", {
+                detail: {
+                    entityId
+                },
+                bubbles: true,
+                composed: true,
+            }));
+    }
+
+    _isLightOn(state) {
+        return ["on", "true"].includes(String(state ?? "").toLowerCase());
+    }
+
+    _onLightClick() {
+        const entityId = this._config.light_entity;
+        if (!entityId)
+            return;
+
+        const domain = entityId.split(".")[0];
+        if (["light", "switch"].includes(domain)) {
+            this._hass.callService(domain, "toggle", {
+                entity_id: entityId
+            });
+        } else {
+            this._moreInfo(entityId);
+        }
+    }
+
+    _ringDasharray(fraction) {
+        const circumference = WineCellarCard.RING_CIRCUMFERENCE;
+        const safeFraction = Math.max(0, Math.min(1, fraction));
+        return `${(safeFraction * circumference).toFixed(1)} ${circumference.toFixed(1)}`;
+    }
+
+    _build() {
+        const config = this._config;
+        const text = this._t;
+        const root = this.shadowRoot || this.attachShadow({
+            mode: "open"
+        });
+
+        root.innerHTML = `
       <style>
         :host { display: block; }
         ha-card {
@@ -495,33 +504,62 @@ class WineCellarCard extends HTMLElement {
       </ha-card>
     `;
 
-    this._el = (id) => root.getElementById(id);
-    const moreInfo = (entityId) => () => this._moreInfo(entityId);
+        this._el = (id) => root.getElementById(id);
+        const moreInfo = (entityId) => () => this._moreInfo(entityId);
 
-    this._el("errorBanner").addEventListener("click", moreInfo(config.error_entity));
-    this._el("lightBtn").addEventListener("click", () => this._onLightClick());
-    this._el("envItem").addEventListener("click", moreInfo(config.env_temp_entity));
-    this._el("modeItem").addEventListener("click", moreInfo(config.mode_entity));
-    this._el("programItem").addEventListener("click", moreInfo(config.program_name_entity));
+        this._el("errorBanner").addEventListener("click", moreInfo(config.error_entity));
+        this._el("lightBtn").addEventListener("click", () => this._onLightClick());
+        this._el("envItem").addEventListener("click", moreInfo(config.env_temp_entity));
+        this._el("modeItem").addEventListener("click", moreInfo(config.mode_entity));
+        this._el("programItem").addEventListener("click", moreInfo(config.program_name_entity));
 
-    for (const zone of [1, 2]) {
-      this._el(`zone${zone}Ring`).addEventListener("click", moreInfo(config[`zone${zone}_temp_entity`]));
-      this._el(`zone${zone}Target`).addEventListener("click", moreInfo(config[`zone${zone}_target_entity`]));
-      this._el(`zone${zone}HumidityRow`).addEventListener("click", moreInfo(config[`zone${zone}_humidity_entity`]));
-      this._el(`zone${zone}Label`).textContent = config[`zone${zone}_label`];
+        for (const zone of [1, 2]) {
+            this._el(`zone${zone}Ring`).addEventListener("click", moreInfo(config[`zone${zone}_temp_entity`]));
+            this._el(`zone${zone}Target`).addEventListener("click", moreInfo(config[`zone${zone}_target_entity`]));
+            this._el(`zone${zone}HumidityRow`).addEventListener("click", moreInfo(config[`zone${zone}_humidity_entity`]));
+            this._el(`zone${zone}Label`).textContent = config[`zone${zone}_label`];
+        }
+
+        const order = WineCellarCard.VISUAL_ORDER[config.cellar_visual_position] || WineCellarCard.VISUAL_ORDER.left;
+        this._el("cellarVisual").style.order = order.visual;
+        this._el("zone1Panel").style.order = order.zone1;
+        this._el("zone2Panel").style.order = order.zone2;
+        this._el("cellarVisual").classList.toggle("hidden", Boolean(config.hide_cellar_visual));
+
+        // Cache the nodes touched on every hass update, so _update()/_updateZone()
+        // no longer pay for a getElementById() lookup on each state change.
+        this._nodes = {
+            wrap: this._el("wrap"),
+            name: this._el("name"),
+            badgeText: this._el("badgeText"),
+            errorBanner: this._el("errorBanner"),
+            errorText: this._el("errorText"),
+            lightBtn: this._el("lightBtn"),
+            lightIcon: this._el("lightIcon"),
+            cvGlow: this._el("cvGlow"),
+            envItem: this._el("envItem"),
+            envValue: this._el("envValue"),
+            modeItem: this._el("modeItem"),
+            modeValue: this._el("modeValue"),
+            programItem: this._el("programItem"),
+            programValue: this._el("programValue"),
+            infoPanel: this._el("infoPanel"),
+        };
+
+        for (const zone of [1, 2]) {
+            this._nodes[`zone${zone}Panel`] = this._el(`zone${zone}Panel`);
+            this._nodes[`zone${zone}Temp`] = this._el(`zone${zone}Temp`);
+            this._nodes[`zone${zone}Arc`] = this._el(`zone${zone}Arc`);
+            this._nodes[`zone${zone}Target`] = this._el(`zone${zone}Target`);
+            this._nodes[`zone${zone}HumidityRow`] = this._el(`zone${zone}HumidityRow`);
+            this._nodes[`zone${zone}Humidity`] = this._el(`zone${zone}Humidity`);
+        }
+
+        this._built = true;
     }
 
-    const order = WineCellarCard.VISUAL_ORDER[config.cellar_visual_position] || WineCellarCard.VISUAL_ORDER.left;
-    this._el("cellarVisual").style.order = order.visual;
-    this._el("zone1Panel").style.order = order.zone1;
-    this._el("zone2Panel").style.order = order.zone2;
-    this._el("cellarVisual").classList.toggle("hidden", Boolean(config.hide_cellar_visual));
-
-    this._built = true;
-  }
-
-  _zoneMarkup(zone) {
-    return `
+    _zoneMarkup(zone) {
+        return `
       <div class="zone-panel hidden" id="zone${zone}Panel">
         <div class="zone-label" id="zone${zone}Label"></div>
         <div class="ring-box" id="zone${zone}Ring">
@@ -535,147 +573,179 @@ class WineCellarCard extends HTMLElement {
         <div class="zone-humidity hidden" id="zone${zone}HumidityRow"><ha-icon icon="mdi:water-percent"></ha-icon><span id="zone${zone}Humidity"></span></div>
       </div>
     `;
-  }
-
-  _update() {
-    const config = this._config;
-    const text = this._t;
-    const wrap = this._el("wrap");
-    const status = this._st(config.status_entity);
-    const noData = !status || ["unknown", "unavailable"].includes(status.state);
-    const isOn = !noData && String(status.state).toLowerCase() === "on";
-
-    wrap.classList.toggle("on", isOn);
-    wrap.classList.toggle("off", !isOn && !noData);
-    wrap.classList.toggle("nodata", noData);
-    this._el("name").textContent = config.name || text.name;
-    this._el("badgeText").textContent = noData ? text.badge_nodata : (isOn ? text.badge_on : text.badge_off);
-
-    if (config.error_entity) {
-      const errorState = this._st(config.error_entity);
-      const value = String(errorState?.state ?? "").toLowerCase();
-      const hasError = Boolean(errorState) && !config.no_error_states.includes(value);
-      this._el("errorBanner").classList.toggle("hidden", !hasError);
-      if (hasError) this._el("errorText").textContent = `${text.error_title}: ${errorState.state}`;
-    } else {
-      this._el("errorBanner").classList.add("hidden");
     }
 
-    let lightOn = false;
-    if (config.light_entity) {
-      lightOn = this._isLightOn(this._st(config.light_entity)?.state);
-      this._el("lightBtn").classList.remove("hidden");
-      this._el("lightBtn").classList.toggle("on", isOn && lightOn);
-      this._el("lightBtn").title = isOn && lightOn ? text.light_on : text.light_off;
-      this._el("lightIcon").setAttribute("icon", isOn && lightOn ? "mdi:lightbulb-on" : "mdi:lightbulb-off-outline");
-    } else {
-      this._el("lightBtn").classList.add("hidden");
+    // Shared logic for the three optional "info panel" items (env temp, mode,
+    // program). Returns whether the item is configured, so the caller can
+    // fold the result into the overall "anyInfo" flag.
+    _updateInfoItem(itemKey, valueKey, hasEntity, hasValue, displayValue) {
+        if (!hasEntity) {
+            this._nodes[itemKey].classList.add("hidden");
+            return false;
+        }
+        this._nodes[itemKey].classList.remove("hidden");
+        this._nodes[valueKey].textContent = hasValue ? displayValue : "N/A";
+        return true;
     }
 
-    this._el("cvGlow").setAttribute("opacity", isOn && lightOn ? ".55" : (isOn ? ".15" : "0"));
+    _update() {
+        const config = this._config;
+        const text = this._t;
+        const nodes = this._nodes;
+        const status = this._st(config.status_entity);
+        const noData = !status || ["unknown", "unavailable"].includes(status.state);
+        const isOn = !noData && String(status.state).toLowerCase() === "on";
 
-    this._updateZone(1, isOn);
-    this._updateZone(2, isOn);
+        nodes.wrap.classList.toggle("on", isOn);
+        nodes.wrap.classList.toggle("off", !isOn && !noData);
+        nodes.wrap.classList.toggle("nodata", noData);
+        nodes.name.textContent = config.name || text.name;
+        nodes.badgeText.textContent = noData ? text.badge_nodata : (isOn ? text.badge_on : text.badge_off);
 
-    let anyInfo = false;
-    if (config.env_temp_entity) {
-      const value = this._num(config.env_temp_entity);
-      this._el("envItem").classList.remove("hidden");
-      this._el("envValue").textContent = isOn && value !== null ? `${this._fmtNum(value, 1)} °C` : "N/A";
-      anyInfo = true;
-    } else this._el("envItem").classList.add("hidden");
+        if (config.error_entity) {
+            const errorState = this._st(config.error_entity);
+            const value = String(errorState?.state ?? "").toLowerCase();
+            const hasError = Boolean(errorState) && !config.no_error_states.includes(value);
+            nodes.errorBanner.classList.toggle("hidden", !hasError);
+            if (hasError)
+                nodes.errorText.textContent = `${text.error_title}: ${errorState.state}`;
+        } else {
+            nodes.errorBanner.classList.add("hidden");
+        }
 
-    if (config.mode_entity) {
-      const state = this._st(config.mode_entity);
-      const raw = state?.state;
-      const modeNames = config.mode_names || {};
-      const hasCustomNames = Object.keys(modeNames).length > 0;
-      const label = hasCustomNames && raw !== undefined && raw !== null && Object.prototype.hasOwnProperty.call(modeNames, raw)
-        ? modeNames[raw]
-        : raw;
-      this._el("modeItem").classList.remove("hidden");
-      this._el("modeValue").textContent = isOn && raw !== undefined && raw !== null ? label : "N/A";
-      anyInfo = true;
-    } else this._el("modeItem").classList.add("hidden");
+        let lightOn = false;
+        if (config.light_entity) {
+            lightOn = this._isLightOn(this._st(config.light_entity)?.state);
+            nodes.lightBtn.classList.remove("hidden");
+            nodes.lightBtn.classList.toggle("on", isOn && lightOn);
+            nodes.lightBtn.title = isOn && lightOn ? text.light_on : text.light_off;
+            nodes.lightIcon.setAttribute("icon", isOn && lightOn ? "mdi:lightbulb-on" : "mdi:lightbulb-off-outline");
+        } else {
+            nodes.lightBtn.classList.add("hidden");
+        }
 
-    if (config.program_name_entity) {
-      const state = this._st(config.program_name_entity);
-      const raw = String(state?.state ?? "").toLowerCase();
-      this._el("programItem").classList.remove("hidden");
-      this._el("programValue").textContent = isOn && !text.no_program.includes(raw) ? state.state : "N/A";
-      anyInfo = true;
-    } else this._el("programItem").classList.add("hidden");
+        nodes.cvGlow.setAttribute("opacity", isOn && lightOn ? ".55" : (isOn ? ".15" : "0"));
 
-    this._el("infoPanel").classList.toggle("hidden", !anyInfo);
-  }
+        this._updateZone(1, isOn);
+        this._updateZone(2, isOn);
 
-  _updateZone(zone, isOn) {
-    const config = this._config;
-    const tempEntity = config[`zone${zone}_temp_entity`];
-    const targetEntity = config[`zone${zone}_target_entity`];
-    const humidityEntity = config[`zone${zone}_humidity_entity`];
-    const panel = this._el(`zone${zone}Panel`);
+        let anyInfo = false;
 
-    if (!tempEntity && !targetEntity && !humidityEntity) {
-      panel.classList.add("hidden");
-      return;
+        const envValue = config.env_temp_entity ? this._num(config.env_temp_entity) : null;
+        anyInfo = this._updateInfoItem(
+            "envItem", "envValue",
+            Boolean(config.env_temp_entity),
+            isOn && envValue !== null,
+            `${this._fmtNum(envValue, 1)} °C`
+        ) || anyInfo;
+
+        const modeState = config.mode_entity ? this._st(config.mode_entity) : undefined;
+        const modeRaw = modeState?.state;
+        const modeNames = config.mode_names || {};
+        const hasCustomModeNames = Object.keys(modeNames).length > 0;
+        const modeLabel = hasCustomModeNames && modeRaw !== undefined && modeRaw !== null && Object.prototype.hasOwnProperty.call(modeNames, modeRaw)
+             ? modeNames[modeRaw]
+             : modeRaw;
+        anyInfo = this._updateInfoItem(
+            "modeItem", "modeValue",
+            Boolean(config.mode_entity),
+            isOn && modeRaw !== undefined && modeRaw !== null,
+            modeLabel
+        ) || anyInfo;
+
+        const programState = config.program_name_entity ? this._st(config.program_name_entity) : undefined;
+        const programRaw = String(programState?.state ?? "").toLowerCase();
+        anyInfo = this._updateInfoItem(
+            "programItem", "programValue",
+            Boolean(config.program_name_entity),
+            isOn && !WineCellarCard.NO_PROGRAM_STATES.includes(programRaw),
+            programState?.state
+        ) || anyInfo;
+
+        nodes.infoPanel.classList.toggle("hidden", !anyInfo);
     }
 
-    panel.classList.remove("hidden");
-    const temp = tempEntity ? this._num(tempEntity) : null;
-    const target = targetEntity ? this._num(targetEntity) : null;
-    const humidity = humidityEntity ? this._num(humidityEntity) : null;
-    const min = Number(config[`zone${zone}_min`]);
-    const max = Number(config[`zone${zone}_max`]);
+    _updateZone(zone, isOn) {
+        const config = this._config;
+        const nodes = this._nodes;
+        const tempEntity = config[`zone${zone}_temp_entity`];
+        const targetEntity = config[`zone${zone}_target_entity`];
+        const humidityEntity = config[`zone${zone}_humidity_entity`];
+        const panel = nodes[`zone${zone}Panel`];
 
-    this._el(`zone${zone}Temp`).textContent = isOn && temp !== null ? this._fmtNum(temp, 1) : "N/A";
-    const fraction = isOn && temp !== null && max !== min ? (temp - min) / (max - min) : 0;
-    this._el(`zone${zone}Arc`).setAttribute("stroke-dasharray", this._ringDasharray(fraction));
+        if (!tempEntity && !targetEntity && !humidityEntity) {
+            panel.classList.add("hidden");
+            return;
+        }
 
-    this._el(`zone${zone}Target`).innerHTML = targetEntity
-      ? (isOn && target !== null ? `${this._t.target}: <b>${this._fmtNum(target, 1)} °C</b>` : `${this._t.target}: <b>N/A</b>`)
-      : "";
+        panel.classList.remove("hidden");
+        const temp = tempEntity ? this._num(tempEntity) : null;
+        const target = targetEntity ? this._num(targetEntity) : null;
+        const humidity = humidityEntity ? this._num(humidityEntity) : null;
+        const min = Number(config[`zone${zone}_min`]);
+        const max = Number(config[`zone${zone}_max`]);
 
-    if (humidityEntity) {
-      this._el(`zone${zone}HumidityRow`).classList.remove("hidden");
-      this._el(`zone${zone}Humidity`).textContent = isOn && humidity !== null ? `${Math.round(humidity)}%` : "N/A";
-    } else {
-      this._el(`zone${zone}HumidityRow`).classList.add("hidden");
+        nodes[`zone${zone}Temp`].textContent = isOn && temp !== null ? this._fmtNum(temp, 1) : "N/A";
+        const fraction = isOn && temp !== null && max !== min ? (temp - min) / (max - min) : 0;
+        nodes[`zone${zone}Arc`].setAttribute("stroke-dasharray", this._ringDasharray(fraction));
+
+        nodes[`zone${zone}Target`].innerHTML = targetEntity
+             ? (isOn && target !== null ? `${this._t.target}: <b>${this._fmtNum(target, 1)} °C</b>` : `${this._t.target}: <b>N/A</b>`)
+             : "";
+
+        if (humidityEntity) {
+            nodes[`zone${zone}HumidityRow`].classList.remove("hidden");
+            nodes[`zone${zone}Humidity`].textContent = isOn && humidity !== null ? `${Math.round(humidity)}%` : "N/A";
+        } else {
+            nodes[`zone${zone}HumidityRow`].classList.add("hidden");
+        }
     }
-  }
 }
 
 class WineCellarCardEditor extends HTMLElement {
-  constructor() {
-    super();
-    this._rendered = false;
-    this._modeNamesTimer = null;
-  }
+    static LANGUAGE_NAMES = {
+        en: "English",
+        fr: "Français",
+        es: "Español",
+        it: "Italiano",
+        pt: "Português",
+        de: "Deutsch",
+        nl: "Nederlands",
+    };
 
-  setConfig(config) {
-    this._config = { ...config };
-    if (!this._rendered) {
-      this._render();
-      this._rendered = true;
+    constructor() {
+        super();
+        this._rendered = false;
+        this._modeNamesTimer = null;
     }
-    this._updateValues();
-  }
 
-  set hass(hass) {
-    this._hass = hass;
-    if (!this._rendered) {
-      this._render();
-      this._rendered = true;
+    setConfig(config) {
+        this._config = {
+            ...config
+        };
+        if (!this._rendered) {
+            this._render();
+            this._rendered = true;
+        }
+        this._updateValues();
     }
-    this._updateValues();
-  }
 
-  disconnectedCallback() {
-    if (this._modeNamesTimer) clearTimeout(this._modeNamesTimer);
-  }
+    set hass(hass) {
+        this._hass = hass;
+        if (!this._rendered) {
+            this._render();
+            this._rendered = true;
+        }
+        this._updateValues();
+    }
 
-  _render() {
-    this.innerHTML = `
+    disconnectedCallback() {
+        if (this._modeNamesTimer)
+            clearTimeout(this._modeNamesTimer);
+    }
+
+    _render() {
+        this.innerHTML = `
       <style>
         .editor { display: grid; gap: 12px; padding: 8px 0; }
         details.section {
@@ -732,13 +802,7 @@ class WineCellarCardEditor extends HTMLElement {
               Language
               <select data-config="language">
                 <option value="">Automatic (Home Assistant language)</option>
-                <option value="en">English</option>
-                <option value="fr">Français</option>
-                <option value="es">Español</option>
-                <option value="it">Italiano</option>
-                <option value="pt">Português</option>
-                <option value="de">Deutsch</option>
-                <option value="nl">Nederlands</option>
+                ${this._languageOptions()}
               </select>
             </label>
             <label>Cellar illustration position<select data-config="cellar_visual_position"><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></label>
@@ -756,9 +820,9 @@ class WineCellarCardEditor extends HTMLElement {
           <summary>Additional entities</summary>
           <div class="section-content"><div class="entity-grid">
             ${this._entityPicker("error_entity", "Error entity", ["sensor"])}
-            ${this._entityPicker("light_entity", "Light entity", ["binary_sensor","light","switch"])}
+            ${this._entityPicker("light_entity", "Light entity", ["binary_sensor", "light", "switch"])}
             ${this._entityPicker("env_temp_entity", "Environment temperature", ["sensor"])}
-            ${this._entityPicker("mode_entity", "Mode entity", ["sensor","select","input_select"])}
+            ${this._entityPicker("mode_entity", "Mode entity", ["sensor", "select", "input_select"])}
             <label>
               Mode names
               <textarea data-config="mode_names" spellcheck="false" placeholder="'0': '-'
@@ -772,23 +836,31 @@ class WineCellarCardEditor extends HTMLElement {
       </div>
     `;
 
-    this._initializeEntityPickers();
-    this._initializeStandardFields();
-  }
+        this._initializeEntityPickers();
+        this._initializeStandardFields();
+    }
 
-  _entityPicker(key, label, domains = []) {
-    return `<div class="field"><span>${label}</span><ha-entity-picker data-config="${key}" data-domains="${domains.join(',')}" allow-custom-entity></ha-entity-picker></div>`;
-  }
+    // Language options are generated from WineCellarCard.STRINGS so a new
+    // language only needs to be added in one place.
+    _languageOptions() {
+        return Object.keys(WineCellarCard.STRINGS)
+            .map((code) => `<option value="${code}">${WineCellarCardEditor.LANGUAGE_NAMES[code] || code}</option>`)
+            .join("");
+    }
 
-  _zoneSection(zone) {
-    return `
+    _entityPicker(key, label, domains = []) {
+        return `<div class="field"><span>${label}</span><ha-entity-picker data-config="${key}" data-domains="${domains.join(',')}" allow-custom-entity></ha-entity-picker></div>`;
+    }
+
+    _zoneSection(zone) {
+        return `
       <details class="section">
         <summary>Zone ${zone}</summary>
         <div class="section-content">
           <div class="entity-grid">
             <label>Label<input data-config="zone${zone}_label" type="text"></label>
             ${this._entityPicker(`zone${zone}_temp_entity`, "Temperature entity", ["sensor"])}
-            ${this._entityPicker(`zone${zone}_target_entity`, "Target temperature entity", ["sensor","number"])}
+            ${this._entityPicker(`zone${zone}_target_entity`, "Target temperature entity", ["sensor", "number"])}
             ${this._entityPicker(`zone${zone}_humidity_entity`, "Humidity entity", ["sensor"])}
           </div>
           <div class="grid">
@@ -798,125 +870,143 @@ class WineCellarCardEditor extends HTMLElement {
         </div>
       </details>
     `;
-  }
+    }
 
-  _initializeEntityPickers() {
-    this.querySelectorAll("ha-entity-picker[data-config]").forEach((picker) => {
-      picker.hass = this._hass;
-      picker.allowCustomEntity = true;
-      const domains = picker.dataset.domains?.split(",").filter(Boolean);
-      if (domains?.length) picker.includeDomains = domains;
-      picker.addEventListener("value-changed", (event) => this._valueChanged(event));
-    });
-  }
+    _initializeEntityPickers() {
+        this.querySelectorAll("ha-entity-picker[data-config]").forEach((picker) => {
+            picker.hass = this._hass;
+            picker.allowCustomEntity = true;
+            const domains = picker.dataset.domains?.split(",").filter(Boolean);
+            if (domains?.length)
+                picker.includeDomains = domains;
+            picker.addEventListener("value-changed", (event) => this._valueChanged(event));
+        });
+    }
 
-  _initializeStandardFields() {
-    this.querySelectorAll("input[data-config], textarea[data-config]").forEach((element) => {
-      element.addEventListener("input", (event) => this._valueChanged(event));
-    });
-    this.querySelectorAll("select[data-config], ha-switch[data-config]").forEach((element) => {
-      element.addEventListener("change", (event) => this._valueChanged(event));
-    });
-  }
+    _initializeStandardFields() {
+        this.querySelectorAll("input[data-config], textarea[data-config]").forEach((element) => {
+            element.addEventListener("input", (event) => this._valueChanged(event));
+        });
+        this.querySelectorAll("select[data-config], ha-switch[data-config]").forEach((element) => {
+            element.addEventListener("change", (event) => this._valueChanged(event));
+        });
+    }
 
-  _updateValues() {
-    if (!this._rendered || !this._config) return;
+    _updateValues() {
+        if (!this._rendered || !this._config)
+            return;
 
-    this.querySelectorAll("[data-config]").forEach((element) => {
-      const key = element.dataset.config;
-      const value = this._config[key];
+        this.querySelectorAll("[data-config]").forEach((element) => {
+            const key = element.dataset.config;
+            const value = this._config[key];
 
-      if (element.tagName === "HA-ENTITY-PICKER") {
-        element.hass = this._hass;
-        element.value = value ?? "";
-        return;
-      }
-      if (element.tagName === "HA-SWITCH") {
-        element.checked = value === true;
-        return;
-      }
-      if (element.tagName === "TEXTAREA" && key === "mode_names") {
-        if (document.activeElement !== element) {
-          element.value = this._formatModeNames(value);
+            if (element.tagName === "HA-ENTITY-PICKER") {
+                element.hass = this._hass;
+                element.value = value ?? "";
+                return;
+            }
+            if (element.tagName === "HA-SWITCH") {
+                element.checked = value === true;
+                return;
+            }
+            if (element.tagName === "TEXTAREA" && key === "mode_names") {
+                if (document.activeElement !== element) {
+                    element.value = this._formatModeNames(value);
+                }
+                return;
+            }
+
+            if (document.activeElement !== element)
+                element.value = value ?? "";
+        });
+    }
+
+    _formatModeNames(modeNames) {
+        if (!modeNames || typeof modeNames !== "object" || Array.isArray(modeNames))
+            return "";
+        return Object.entries(modeNames).map(([key, label]) => `'${key}': ${label}`).join("\n");
+    }
+
+    _parseModeNames(text) {
+        const result = {};
+        String(text ?? "").split(/\r?\n/).forEach((line) => {
+            const trimmed = line.trim();
+            if (!trimmed || trimmed.startsWith("#"))
+                return;
+            const separator = trimmed.indexOf(":");
+            if (separator < 0)
+                return;
+            const key = trimmed.slice(0, separator).trim().replace(/^['"]|['"]$/g, "");
+            const label = trimmed.slice(separator + 1).trim().replace(/^['"]|['"]$/g, "");
+            if (key)
+                result[key] = label;
+        });
+        return result;
+    }
+
+    _valueChanged(event) {
+        if (!this._config)
+            return;
+        const target = event.currentTarget;
+        const key = target?.dataset?.config;
+        if (!key)
+            return;
+
+        let value;
+        if (target.tagName === "HA-ENTITY-PICKER") {
+            value = event.detail?.value ?? target.value ?? "";
+        } else if (target.tagName === "HA-SWITCH") {
+            value = Boolean(target.checked);
+        } else if (target.tagName === "TEXTAREA" && key === "mode_names") {
+            value = this._parseModeNames(target.value);
+        } else if (target.type === "number") {
+            value = target.value === "" ? undefined : Number(target.value);
+        } else {
+            value = target.value;
         }
-        return;
-      }
 
-      if (document.activeElement !== element) element.value = value ?? "";
-    });
-  }
+        const config = {
+            ...this._config,
+            [key]: value
+        };
 
-  _formatModeNames(modeNames) {
-    if (!modeNames || typeof modeNames !== "object" || Array.isArray(modeNames)) return "";
-    return Object.entries(modeNames).map(([key, label]) => `'${key}': ${label}`).join("\n");
-  }
+        if (value === "" || value === undefined)
+            delete config[key];
+        this._config = config;
 
-  _parseModeNames(text) {
-    const result = {};
-    String(text ?? "").split(/\r?\n/).forEach((line) => {
-      const trimmed = line.trim();
-      if (!trimmed || trimmed.startsWith("#")) return;
-      const separator = trimmed.indexOf(":");
-      if (separator < 0) return;
-      const key = trimmed.slice(0, separator).trim().replace(/^['"]|['"]$/g, "");
-      const label = trimmed.slice(separator + 1).trim().replace(/^['"]|['"]$/g, "");
-      if (key) result[key] = label;
-    });
-    return result;
-  }
+        const emit = () => this.dispatchEvent(new CustomEvent("config-changed", {
+                detail: {
+                    config: {
+                        ...this._config
+                    }
+                },
+                bubbles: true,
+                composed: true,
+            }));
 
-  _valueChanged(event) {
-    if (!this._config) return;
-    const target = event.currentTarget;
-    const key = target?.dataset?.config;
-    if (!key) return;
-
-    let value;
-    if (target.tagName === "HA-ENTITY-PICKER") {
-      value = event.detail?.value ?? target.value ?? "";
-    } else if (target.tagName === "HA-SWITCH") {
-      value = Boolean(target.checked);
-    } else if (target.tagName === "TEXTAREA" && key === "mode_names") {
-      value = this._parseModeNames(target.value);
-    } else if (target.type === "number") {
-      value = target.value === "" ? undefined : Number(target.value);
-    } else {
-      value = target.value;
+        if (key === "mode_names") {
+            if (this._modeNamesTimer)
+                clearTimeout(this._modeNamesTimer);
+            this._modeNamesTimer = setTimeout(emit, 250);
+        } else {
+            emit();
+        }
     }
-
-    const config = { ...this._config, [key]: value };
-
-    if (value === "" || value === undefined) delete config[key];
-    this._config = config;
-
-    const emit = () => this.dispatchEvent(new CustomEvent("config-changed", {
-      detail: { config: { ...this._config } },
-      bubbles: true,
-      composed: true,
-    }));
-
-    if (key === "mode_names") {
-      if (this._modeNamesTimer) clearTimeout(this._modeNamesTimer);
-      this._modeNamesTimer = setTimeout(emit, 250);
-    } else {
-      emit();
-    }
-  }
 }
 
 if (!customElements.get("wine-cellar-card-editor")) {
-  customElements.define("wine-cellar-card-editor", WineCellarCardEditor);
+    customElements.define("wine-cellar-card-editor", WineCellarCardEditor);
 }
 if (!customElements.get("wine-cellar-card")) {
-  customElements.define("wine-cellar-card", WineCellarCard);
+    customElements.define("wine-cellar-card", WineCellarCard);
 }
 
 window.customCards = window.customCards || [];
 if (!window.customCards.some((card) => card.type === "wine-cellar-card")) {
-  window.customCards.push({
-    type: "wine-cellar-card",
-    name: "Wine Cellar Card",
-    description: "Dual-zone wine cellar card with temperature, humidity, light, mode and errors",
-    preview: true,
-  });
+    window.customCards.push({
+        type: "wine-cellar-card",
+        name: "Wine Cellar Card",
+        description: "Dual-zone wine cellar card with temperature, humidity, light, mode and errors",
+        preview: true,
+    });
 }
