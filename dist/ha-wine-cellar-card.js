@@ -22,6 +22,8 @@ class WineCellarCard extends HTMLElement {
             light_off: "Light off",
             error_title: "ERROR",
             tip_light: "Cellar light",
+            zone1_label: "ZONE 1",
+            zone2_label: "ZONE 2",
         },
         fr: {
             name: "Cave à vin",
@@ -36,6 +38,8 @@ class WineCellarCard extends HTMLElement {
             light_off: "Lumière éteinte",
             error_title: "ERREUR",
             tip_light: "Éclairage cave",
+            zone1_label: "ZONE 1",
+            zone2_label: "ZONE 2",
         },
         es: {
             name: "Bodega de vinos",
@@ -50,6 +54,8 @@ class WineCellarCard extends HTMLElement {
             light_off: "Luz apagada",
             error_title: "ERROR",
             tip_light: "Luz de la bodega",
+            zone1_label: "ZONA 1",
+            zone2_label: "ZONA 2",
         },
         it: {
             name: "Cantina vini",
@@ -64,6 +70,8 @@ class WineCellarCard extends HTMLElement {
             light_off: "Luce spenta",
             error_title: "ERRORE",
             tip_light: "Luce cantina",
+            zone1_label: "ZONA 1",
+            zone2_label: "ZONA 2",
         },
         pt: {
             name: "Adega de vinhos",
@@ -78,6 +86,8 @@ class WineCellarCard extends HTMLElement {
             light_off: "Luz desligada",
             error_title: "ERRO",
             tip_light: "Luz da adega",
+            zone1_label: "ZONA 1",
+            zone2_label: "ZONA 2",
         },
         de: {
             name: "Weinkühlschrank",
@@ -92,6 +102,8 @@ class WineCellarCard extends HTMLElement {
             light_off: "Licht aus",
             error_title: "FEHLER",
             tip_light: "Kellerbeleuchtung",
+            zone1_label: "ZONE 1",
+            zone2_label: "ZONE 2",
         },
         nl: {
             name: "Wijnkelder",
@@ -106,6 +118,8 @@ class WineCellarCard extends HTMLElement {
             light_off: "Licht uit",
             error_title: "FOUT",
             tip_light: "Kelderverlichting",
+            zone1_label: "ZONE 1",
+            zone2_label: "ZONE 2",
         },
     };
 
@@ -115,8 +129,6 @@ class WineCellarCard extends HTMLElement {
     static RING_CIRCUMFERENCE = 2 * Math.PI * WineCellarCard.RING_RADIUS;
 
     static DEFAULTS = {
-        zone1_label: "ZONE 1",
-        zone2_label: "ZONE 2",
         zone1_min: 5,
         zone1_max: 20,
         zone2_min: 5,
@@ -169,13 +181,13 @@ class WineCellarCard extends HTMLElement {
                 ...WineCellarCard.STUB_MODE_NAMES
             },
             program_name_entity: "",
-            zone1_label: "ZONE 1",
+            zone1_label: "",
             zone1_temp_entity: "",
             zone1_target_entity: "",
             zone1_humidity_entity: "",
             zone1_min: 5,
             zone1_max: 20,
-            zone2_label: "ZONE 2",
+            zone2_label: "",
             zone2_temp_entity: "",
             zone2_target_entity: "",
             zone2_humidity_entity: "",
@@ -517,7 +529,8 @@ class WineCellarCard extends HTMLElement {
             this._el(`zone${zone}Ring`).addEventListener("click", moreInfo(config[`zone${zone}_temp_entity`]));
             this._el(`zone${zone}Target`).addEventListener("click", moreInfo(config[`zone${zone}_target_entity`]));
             this._el(`zone${zone}HumidityRow`).addEventListener("click", moreInfo(config[`zone${zone}_humidity_entity`]));
-            this._el(`zone${zone}Label`).textContent = config[`zone${zone}_label`];
+            // Fall back to the current language's zone label when the field is left empty.
+            this._el(`zone${zone}Label`).textContent = config[`zone${zone}_label`] || text[`zone${zone}_label`];
         }
 
         const order = WineCellarCard.VISUAL_ORDER[config.cellar_visual_position] || WineCellarCard.VISUAL_ORDER.left;
@@ -858,7 +871,7 @@ class WineCellarCardEditor extends HTMLElement {
         <summary>Zone ${zone}</summary>
         <div class="section-content">
           <div class="entity-grid">
-            <label>Label<input data-config="zone${zone}_label" type="text"></label>
+            <label>Label<input data-config="zone${zone}_label" type="text" placeholder="ZONE ${zone}"></label>
             ${this._entityPicker(`zone${zone}_temp_entity`, "Temperature entity", ["sensor"])}
             ${this._entityPicker(`zone${zone}_target_entity`, "Target temperature entity", ["sensor", "number"])}
             ${this._entityPicker(`zone${zone}_humidity_entity`, "Humidity entity", ["sensor"])}
