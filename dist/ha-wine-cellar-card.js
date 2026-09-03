@@ -171,30 +171,7 @@ class WineCellarCard extends HTMLElement {
 
     static getStubConfig() {
         return {
-            name: "",
             status_entity: "binary_sensor.wine_cellar_status",
-            error_entity: "",
-            light_entity: "",
-            env_temp_entity: "",
-            mode_entity: "",
-            mode_names: {
-                ...WineCellarCard.STUB_MODE_NAMES
-            },
-            program_name_entity: "",
-            zone1_label: "",
-            zone1_temp_entity: "",
-            zone1_target_entity: "",
-            zone1_humidity_entity: "",
-            zone1_min: 0,
-            zone1_max: 20,
-            zone2_label: "",
-            zone2_temp_entity: "",
-            zone2_target_entity: "",
-            zone2_humidity_entity: "",
-            zone2_min: 0,
-            zone2_max: 20,
-            cellar_visual_position: "left",
-            hide_cellar_visual: false,
         };
     }
 
@@ -203,7 +180,9 @@ class WineCellarCard extends HTMLElement {
     // Falls back to the raw code if Intl.DisplayNames is unavailable.
     static languageDisplayName(code) {
         try {
-            const displayNames = new Intl.DisplayNames([code], { type: "language" });
+            const displayNames = new Intl.DisplayNames([code], {
+                type: "language"
+            });
             const name = displayNames.of(code);
             return name ? name.charAt(0).toUpperCase() + name.slice(1) : code;
         } catch (error) {
@@ -219,9 +198,11 @@ class WineCellarCard extends HTMLElement {
         this._config = {
             ...WineCellarCard.DEFAULTS,
             ...config,
-            mode_names: config.mode_names && typeof config.mode_names === "object"
-             ? config.mode_names
-             : {},
+            mode_names: config.mode_names === undefined
+             ? {
+                ...WineCellarCard.STUB_MODE_NAMES
+            }
+             : (config.mode_names && typeof config.mode_names === "object" ? config.mode_names : {}),
         };
 
         this._built = false;
@@ -325,12 +306,108 @@ class WineCellarCard extends HTMLElement {
         return `${(safeFraction * circumference).toFixed(1)} ${circumference.toFixed(1)}`;
     }
 
+    // A zone is considered "configured" as soon as at least one of its
+    // entities is set. Used both to decide whether to show the zone panel
+    // and to pick the matching cellar illustration (see _build()).
+    _zoneConfigured(zone) {
+        const config = this._config;
+        return Boolean(
+            config[`zone${zone}_temp_entity`] ||
+            config[`zone${zone}_target_entity`] ||
+            config[`zone${zone}_humidity_entity`]);
+    }
+
+    // Formats a single zone's live temperature for the illustration's
+    // digital display: "12.0°" when available, "N/A" otherwise.
+    _displayTemp(zone, isOn) {
+        const tempEntity = this._config[`zone${zone}_temp_entity`];
+        const temp = tempEntity ? this._num(tempEntity) : null;
+        return isOn && temp !== null ? `${this._fmtNum(temp, 1)}°` : "N/A";
+    }
+
+    // Bottle illustration used once BOTH zones are configured: two racks
+    // (6 small bottles + 6 small bottles) split by the "DUAL SPACE" divider.
+    _dualZoneBottlesMarkup() {
+        return `
+      <g>
+        <circle cx="18" cy="40" r="4" fill="#7a1f2b"/>
+        <circle cx="30" cy="40" r="4" fill="#e9e3d3"/>
+        <circle cx="42" cy="40" r="4" fill="#33264a"/>
+        <circle cx="54" cy="40" r="4" fill="#b8862c"/>
+        <circle cx="66" cy="40" r="4" fill="#8a2035"/>
+        <circle cx="78" cy="40" r="4" fill="#4a1e2e"/>
+        <circle cx="18" cy="58" r="4" fill="#4a1e2e"/>
+        <circle cx="30" cy="58" r="4" fill="#8a2035"/>
+        <circle cx="42" cy="58" r="4" fill="#b8862c"/>
+        <circle cx="54" cy="58" r="4" fill="#33264a"/>
+        <circle cx="66" cy="58" r="4" fill="#e9e3d3"/>
+        <circle cx="78" cy="58" r="4" fill="#7a1f2b"/>
+        <circle cx="20" cy="100" r="5" fill="#8a2035"/>
+        <circle cx="35" cy="100" r="5" fill="#33264a"/>
+        <circle cx="50" cy="100" r="5" fill="#e9e3d3"/>
+        <circle cx="65" cy="100" r="5" fill="#b8862c"/>
+        <circle cx="78" cy="100" r="5" fill="#7a1f2b"/>
+        <circle cx="20" cy="122" r="5" fill="#33264a"/>
+        <circle cx="35" cy="122" r="5" fill="#7a1f2b"/>
+        <circle cx="50" cy="122" r="5" fill="#b8862c"/>
+        <circle cx="65" cy="122" r="5" fill="#e9e3d3"/>
+        <circle cx="78" cy="122" r="5" fill="#4a1e2e"/>
+      </g>
+      <rect x="10" y="76" width="76" height="5" fill="#050506"/>
+      <text x="48" y="80" text-anchor="middle" font-size="3" font-family="sans-serif" letter-spacing="1.5" fill="#5a5a5e">DUAL SPACE</text>
+    `;
+    }
+
+    // Bottle illustration used by default (zero or one zone configured):
+    // no divider, a single rack of bottles spread across the full
+    // interior height.
+    _singleZoneBottlesMarkup() {
+        const columns = [18, 30, 42, 54, 66, 78];
+        const rows = [38, 60, 82, 104, 126];
+        const palette = ["#7a1f2b", "#e9e3d3", "#33264a", "#b8862c", "#8a2035", "#4a1e2e"];
+        const radius = 4.3;
+
+        const circles = rows.map((y, rowIndex) => {
+            // Alternate the color order per row for a "brick" look, like
+            // the two racks of the dual-zone illustration already do.
+            const colors = rowIndex % 2 === 0 ? palette : [...palette].slice().reverse();
+            return columns.map((x, colIndex) =>
+`<circle cx="${x}" cy="${y}" r="${radius}" fill="${colors[colIndex]}"/>`).join("");
+        }).join("");
+
+        return `<g>${circles}</g>`;
+    }
+
+    // Small digital display near the top of the illustration. In mono-zone
+    // mode it's a narrow display showing one temperature; in dual-zone mode
+    // it's widened to fit both zones' temperatures side by side. The actual
+    // live values are filled in by _update() via the "cvDisplayText" node.
+    _cellarDisplayMarkup(dualZoneVisual) {
+        if (dualZoneVisual) {
+            return `
+        <rect x="24" y="8" width="48" height="6.4" rx="2" fill="#000" stroke="#2a2a2a" stroke-width=".5"/>
+        <text id="cvDisplayText" x="48" y="12.9" text-anchor="middle" font-size="3.6" font-family="monospace" fill="#6fd0e0">—° / —°</text>
+      `;
+        }
+        return `
+      <rect x="36" y="8" width="24" height="6.4" rx="2" fill="#000" stroke="#2a2a2a" stroke-width=".5"/>
+      <text id="cvDisplayText" x="48" y="12.9" text-anchor="middle" font-size="4.4" font-family="monospace" fill="#6fd0e0">—°</text>
+    `;
+    }
+
     _build() {
         const config = this._config;
         const text = this._t;
         const root = this.shadowRoot || this.attachShadow({
             mode: "open"
         });
+
+        // Default illustration is the single-zone layout. It only switches
+        // to the dual-zone layout once BOTH zones have an entity configured.
+        // Cached on the instance so _update() can reuse it without having
+        // to recompute or guess which layout is currently rendered.
+        const dualZoneVisual = this._zoneConfigured(1) && this._zoneConfigured(2);
+        this._dualZoneVisual = dualZoneVisual;
 
         root.innerHTML = `
       <style>
@@ -478,36 +555,10 @@ class WineCellarCard extends HTMLElement {
                 <rect x="4" y="4" width="88" height="172" rx="10" fill="url(#cvBody)" stroke="#000"/>
                 <rect x="4" y="4" width="88" height="15" rx="10" fill="#0b0b0d"/>
                 <rect x="4" y="11" width="88" height="8" fill="#0b0b0d"/>
-                <rect x="39" y="8" width="18" height="6.4" rx="2" fill="#000" stroke="#2a2a2a" stroke-width=".5"/>
-                <text x="48" y="12.9" text-anchor="middle" font-size="4.4" font-family="monospace" fill="#6fd0e0">12°</text>
+                ${this._cellarDisplayMarkup(dualZoneVisual)}
                 <rect x="10" y="23" width="76" height="145" rx="6" fill="url(#cvGlass)" stroke="#000"/>
                 <rect class="cv-glow" id="cvGlow" x="10" y="23" width="76" height="145" rx="6" fill="#ffcf7a" opacity=".08"/>
-                <g>
-                  <circle cx="18" cy="40" r="4" fill="#7a1f2b"/>
-                  <circle cx="30" cy="40" r="4" fill="#e9e3d3"/>
-                  <circle cx="42" cy="40" r="4" fill="#33264a"/>
-                  <circle cx="54" cy="40" r="4" fill="#b8862c"/>
-                  <circle cx="66" cy="40" r="4" fill="#8a2035"/>
-                  <circle cx="78" cy="40" r="4" fill="#4a1e2e"/>
-                  <circle cx="18" cy="58" r="4" fill="#4a1e2e"/>
-                  <circle cx="30" cy="58" r="4" fill="#8a2035"/>
-                  <circle cx="42" cy="58" r="4" fill="#b8862c"/>
-                  <circle cx="54" cy="58" r="4" fill="#33264a"/>
-                  <circle cx="66" cy="58" r="4" fill="#e9e3d3"/>
-                  <circle cx="78" cy="58" r="4" fill="#7a1f2b"/>
-                  <circle cx="20" cy="100" r="5" fill="#8a2035"/>
-                  <circle cx="35" cy="100" r="5" fill="#33264a"/>
-                  <circle cx="50" cy="100" r="5" fill="#e9e3d3"/>
-                  <circle cx="65" cy="100" r="5" fill="#b8862c"/>
-                  <circle cx="78" cy="100" r="5" fill="#7a1f2b"/>
-                  <circle cx="20" cy="122" r="5" fill="#33264a"/>
-                  <circle cx="35" cy="122" r="5" fill="#7a1f2b"/>
-                  <circle cx="50" cy="122" r="5" fill="#b8862c"/>
-                  <circle cx="65" cy="122" r="5" fill="#e9e3d3"/>
-                  <circle cx="78" cy="122" r="5" fill="#4a1e2e"/>
-                </g>
-                <rect x="10" y="76" width="76" height="5" fill="#050506"/>
-                <text x="48" y="80" text-anchor="middle" font-size="3" font-family="sans-serif" letter-spacing="1.5" fill="#5a5a5e">DUAL SPACE</text>
+                ${dualZoneVisual ? this._dualZoneBottlesMarkup() : this._singleZoneBottlesMarkup()}
                 <rect x="14" y="140" width="34" height="7" rx="3.5" fill="#141416"/>
                 <circle cx="17" cy="143.5" r="1.6" fill="#c9a227"/>
                 <rect x="34" y="152" width="40" height="7.5" rx="3.75" fill="#1c1c1f"/>
@@ -538,7 +589,7 @@ class WineCellarCard extends HTMLElement {
         this._el("modeItem").addEventListener("click", moreInfo(config.mode_entity));
         this._el("programItem").addEventListener("click", moreInfo(config.program_name_entity));
 
-        for (const zone of [1, 2]) {
+        for (const zone of[1, 2]) {
             this._el(`zone${zone}Ring`).addEventListener("click", moreInfo(config[`zone${zone}_temp_entity`]));
             this._el(`zone${zone}Target`).addEventListener("click", moreInfo(config[`zone${zone}_target_entity`]));
             this._el(`zone${zone}HumidityRow`).addEventListener("click", moreInfo(config[`zone${zone}_humidity_entity`]));
@@ -561,6 +612,7 @@ class WineCellarCard extends HTMLElement {
             lightBtn: this._el("lightBtn"),
             lightIcon: this._el("lightIcon"),
             cvGlow: this._el("cvGlow"),
+            cvDisplayText: this._el("cvDisplayText"),
             envItem: this._el("envItem"),
             envValue: this._el("envValue"),
             modeItem: this._el("modeItem"),
@@ -570,7 +622,7 @@ class WineCellarCard extends HTMLElement {
             infoPanel: this._el("infoPanel"),
         };
 
-        for (const zone of [1, 2]) {
+        for (const zone of[1, 2]) {
             this._nodes[`zone${zone}Panel`] = this._el(`zone${zone}Panel`);
             this._nodes[`zone${zone}Temp`] = this._el(`zone${zone}Temp`);
             this._nodes[`zone${zone}Arc`] = this._el(`zone${zone}Arc`);
@@ -647,6 +699,15 @@ class WineCellarCard extends HTMLElement {
 
         nodes.cvGlow.setAttribute("opacity", isOn && lightOn ? ".55" : (isOn ? ".15" : "0"));
 
+        // Digital display on the illustration: one live temperature in
+        // mono-zone mode, both zones' live temperatures in dual-zone mode.
+        if (this._dualZoneVisual) {
+            nodes.cvDisplayText.textContent = `${this._displayTemp(1, isOn)} / ${this._displayTemp(2, isOn)}`;
+        } else {
+            const zone = this._zoneConfigured(1) ? 1 : (this._zoneConfigured(2) ? 2 : null);
+            nodes.cvDisplayText.textContent = zone ? this._displayTemp(zone, isOn) : "N/A";
+        }
+
         this._updateZone(1, isOn);
         this._updateZone(2, isOn);
 
@@ -654,11 +715,10 @@ class WineCellarCard extends HTMLElement {
 
         const envValue = config.env_temp_entity ? this._num(config.env_temp_entity) : null;
         anyInfo = this._updateInfoItem(
-            "envItem", "envValue",
-            Boolean(config.env_temp_entity),
-            isOn && envValue !== null,
-            `${this._fmtNum(envValue, 1)} °C`
-        ) || anyInfo;
+                "envItem", "envValue",
+                Boolean(config.env_temp_entity),
+                isOn && envValue !== null,
+`${this._fmtNum(envValue, 1)} °C`) || anyInfo;
 
         const modeState = config.mode_entity ? this._st(config.mode_entity) : undefined;
         const modeRaw = modeState?.state;
@@ -668,20 +728,18 @@ class WineCellarCard extends HTMLElement {
              ? modeNames[modeRaw]
              : modeRaw;
         anyInfo = this._updateInfoItem(
-            "modeItem", "modeValue",
-            Boolean(config.mode_entity),
-            isOn && modeRaw !== undefined && modeRaw !== null,
-            modeLabel
-        ) || anyInfo;
+                "modeItem", "modeValue",
+                Boolean(config.mode_entity),
+                isOn && modeRaw !== undefined && modeRaw !== null,
+                modeLabel) || anyInfo;
 
         const programState = config.program_name_entity ? this._st(config.program_name_entity) : undefined;
         const programRaw = String(programState?.state ?? "").toLowerCase();
         anyInfo = this._updateInfoItem(
-            "programItem", "programValue",
-            Boolean(config.program_name_entity),
-            isOn && !WineCellarCard.NO_PROGRAM_STATES.includes(programRaw),
-            programState?.state
-        ) || anyInfo;
+                "programItem", "programValue",
+                Boolean(config.program_name_entity),
+                isOn && !WineCellarCard.NO_PROGRAM_STATES.includes(programRaw),
+                programState?.state) || anyInfo;
 
         nodes.infoPanel.classList.toggle("hidden", !anyInfo);
     }
@@ -689,17 +747,17 @@ class WineCellarCard extends HTMLElement {
     _updateZone(zone, isOn) {
         const config = this._config;
         const nodes = this._nodes;
-        const tempEntity = config[`zone${zone}_temp_entity`];
-        const targetEntity = config[`zone${zone}_target_entity`];
-        const humidityEntity = config[`zone${zone}_humidity_entity`];
         const panel = nodes[`zone${zone}Panel`];
 
-        if (!tempEntity && !targetEntity && !humidityEntity) {
+        if (!this._zoneConfigured(zone)) {
             panel.classList.add("hidden");
             return;
         }
 
         panel.classList.remove("hidden");
+        const tempEntity = config[`zone${zone}_temp_entity`];
+        const targetEntity = config[`zone${zone}_target_entity`];
+        const humidityEntity = config[`zone${zone}_humidity_entity`];
         const temp = tempEntity ? this._num(tempEntity) : null;
         const target = targetEntity ? this._num(targetEntity) : null;
         const humidity = humidityEntity ? this._num(humidityEntity) : null;
@@ -725,19 +783,31 @@ class WineCellarCard extends HTMLElement {
 
 class WineCellarCardEditor extends HTMLElement {
     static SELECT_OPTIONS = {
-        cellar_visual_position: [
-            { value: "left", label: "Left" },
-            { value: "center", label: "Center" },
-            { value: "right", label: "Right" },
+        cellar_visual_position: [{
+                value: "left",
+                label: "Left"
+            }, {
+                value: "center",
+                label: "Center"
+            }, {
+                value: "right",
+                label: "Right"
+            },
         ],
     };
 
     static AUTO_LANGUAGE = "auto";
 
+    static SELECT_DEFAULTS = {
+        language: WineCellarCardEditor.AUTO_LANGUAGE,
+        cellar_visual_position: WineCellarCard.DEFAULTS.cellar_visual_position,
+    };
+
     constructor() {
         super();
         this._rendered = false;
         this._modeNamesTimer = null;
+        this._focusedElements = new Set();
     }
 
     setConfig(config) {
@@ -767,12 +837,14 @@ class WineCellarCardEditor extends HTMLElement {
 
     _languageOptions() {
         const codes = Object.keys(WineCellarCard.STRINGS);
-        return [
-            { value: WineCellarCardEditor.AUTO_LANGUAGE, label: "Automatic (Home Assistant language)" },
+        return [{
+                value: WineCellarCardEditor.AUTO_LANGUAGE,
+                label: "Automatic (Home Assistant language)"
+            },
             ...codes.map((code) => ({
-                value: code,
-                label: WineCellarCard.languageDisplayName(code),
-            })),
+                    value: code,
+                    label: WineCellarCard.languageDisplayName(code),
+                })),
         ];
     }
 
@@ -854,7 +926,7 @@ class WineCellarCardEditor extends HTMLElement {
               <textarea data-config="mode_names" spellcheck="false" placeholder="'0': '-'
 '1': Standard
 '2': Eco"></textarea>
-              <span class="field-description">One mapping per line, format: code: label. Clear the field to show the mode entity's raw, untranslated value on the card instead.</span>
+              <span class="field-description">One mapping per line, format: code: label. Defaults to '0': -, '1': Standard, '2': Eco when left unconfigured. Clear the field to show the mode entity's raw, untranslated value on the card instead.</span>
             </label>
             ${this._entityPicker("program_name_entity", "Program name entity", ["sensor"])}
           </div></div>
@@ -872,6 +944,7 @@ class WineCellarCardEditor extends HTMLElement {
     }
 
     _zoneSection(zone) {
+        const defaults = WineCellarCard.DEFAULTS;
         return `
       <details class="section">
         <summary>Zone ${zone}</summary>
@@ -883,8 +956,8 @@ class WineCellarCardEditor extends HTMLElement {
             ${this._entityPicker(`zone${zone}_humidity_entity`, "Humidity entity", ["sensor"])}
           </div>
           <div class="grid">
-            <label>Minimum temperature<input data-config="zone${zone}_min" type="number" step="0.5"></label>
-            <label>Maximum temperature<input data-config="zone${zone}_max" type="number" step="0.5"></label>
+            <label>Minimum temperature<input data-config="zone${zone}_min" type="number" step="0.5" placeholder="${defaults[`zone${zone}_min`]}"></label>
+            <label>Maximum temperature<input data-config="zone${zone}_max" type="number" step="0.5" placeholder="${defaults[`zone${zone}_max`]}"></label>
           </div>
         </div>
       </details>
@@ -906,8 +979,8 @@ class WineCellarCardEditor extends HTMLElement {
         this.querySelectorAll("ha-selector[data-config]").forEach((selector) => {
             const key = selector.dataset.config;
             const options = key === "language"
-                ? this._languageOptions()
-                : WineCellarCardEditor.SELECT_OPTIONS[key] || [];
+                 ? this._languageOptions()
+                 : WineCellarCardEditor.SELECT_OPTIONS[key] || [];
 
             selector.hass = this._hass;
             selector.selector = {
@@ -923,6 +996,8 @@ class WineCellarCardEditor extends HTMLElement {
     _initializeStandardFields() {
         this.querySelectorAll("input[data-config], textarea[data-config]").forEach((element) => {
             element.addEventListener("input", (event) => this._valueChanged(event));
+            element.addEventListener("focus", () => this._focusedElements.add(element));
+            element.addEventListener("blur", () => this._focusedElements.delete(element));
         });
         this.querySelectorAll("ha-switch[data-config]").forEach((element) => {
             element.addEventListener("change", (event) => this._valueChanged(event));
@@ -945,7 +1020,8 @@ class WineCellarCardEditor extends HTMLElement {
             if (element.tagName === "HA-SELECTOR") {
                 element.hass = this._hass;
                 const isEmpty = value === undefined || value === null || value === "";
-                element.value = (key === "language" && isEmpty) ? WineCellarCardEditor.AUTO_LANGUAGE : (value ?? "");
+                const fallback = WineCellarCardEditor.SELECT_DEFAULTS[key];
+                element.value = (isEmpty && fallback !== undefined) ? fallback : (value ?? "");
                 return;
             }
             if (element.tagName === "HA-SWITCH") {
@@ -953,13 +1029,14 @@ class WineCellarCardEditor extends HTMLElement {
                 return;
             }
             if (element.tagName === "TEXTAREA" && key === "mode_names") {
-                if (document.activeElement !== element) {
-                    element.value = this._formatModeNames(value);
+                if (!this._focusedElements.has(element)) {
+                    const modeNames = value !== undefined ? value : WineCellarCard.STUB_MODE_NAMES;
+                    element.value = this._formatModeNames(modeNames);
                 }
                 return;
             }
 
-            if (document.activeElement !== element)
+            if (!this._focusedElements.has(element))
                 element.value = value ?? "";
         });
     }
