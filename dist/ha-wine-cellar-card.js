@@ -129,9 +129,9 @@ class WineCellarCard extends HTMLElement {
     static RING_CIRCUMFERENCE = 2 * Math.PI * WineCellarCard.RING_RADIUS;
 
     static DEFAULTS = {
-        zone1_min: 5,
+        zone1_min: 0,
         zone1_max: 20,
-        zone2_min: 5,
+        zone2_min: 0,
         zone2_max: 20,
         cellar_visual_position: "left",
         hide_cellar_visual: false,
@@ -196,6 +196,19 @@ class WineCellarCard extends HTMLElement {
             cellar_visual_position: "left",
             hide_cellar_visual: false,
         };
+    }
+
+    // Native display name for a language code (e.g. "de" -> "Deutsch"),
+    // used by the editor to auto-build the Language dropdown from STRINGS.
+    // Falls back to the raw code if Intl.DisplayNames is unavailable.
+    static languageDisplayName(code) {
+        try {
+            const displayNames = new Intl.DisplayNames([code], { type: "language" });
+            const name = displayNames.of(code);
+            return name ? name.charAt(0).toUpperCase() + name.slice(1) : code;
+        } catch (error) {
+            return code;
+        }
     }
 
     setConfig(config) {
@@ -539,8 +552,6 @@ class WineCellarCard extends HTMLElement {
         this._el("zone2Panel").style.order = order.zone2;
         this._el("cellarVisual").classList.toggle("hidden", Boolean(config.hide_cellar_visual));
 
-        // Cache the nodes touched on every hass update, so _update()/_updateZone()
-        // no longer pay for a getElementById() lookup on each state change.
         this._nodes = {
             wrap: this._el("wrap"),
             name: this._el("name"),
@@ -588,9 +599,6 @@ class WineCellarCard extends HTMLElement {
     `;
     }
 
-    // Shared logic for the three optional "info panel" items (env temp, mode,
-    // program). Returns whether the item is configured, so the caller can
-    // fold the result into the overall "anyInfo" flag.
     _updateInfoItem(itemKey, valueKey, hasEntity, hasValue, displayValue) {
         if (!hasEntity) {
             this._nodes[itemKey].classList.add("hidden");
@@ -716,15 +724,15 @@ class WineCellarCard extends HTMLElement {
 }
 
 class WineCellarCardEditor extends HTMLElement {
-    static LANGUAGE_NAMES = {
-        en: "English",
-        fr: "Français",
-        es: "Español",
-        it: "Italiano",
-        pt: "Português",
-        de: "Deutsch",
-        nl: "Nederlands",
+    static SELECT_OPTIONS = {
+        cellar_visual_position: [
+            { value: "left", label: "Left" },
+            { value: "center", label: "Center" },
+            { value: "right", label: "Right" },
+        ],
     };
+
+    static AUTO_LANGUAGE = "auto";
 
     constructor() {
         super();
@@ -757,6 +765,17 @@ class WineCellarCardEditor extends HTMLElement {
             clearTimeout(this._modeNamesTimer);
     }
 
+    _languageOptions() {
+        const codes = Object.keys(WineCellarCard.STRINGS);
+        return [
+            { value: WineCellarCardEditor.AUTO_LANGUAGE, label: "Automatic (Home Assistant language)" },
+            ...codes.map((code) => ({
+                value: code,
+                label: WineCellarCard.languageDisplayName(code),
+            })),
+        ];
+    }
+
     _render() {
         this.innerHTML = `
       <style>
@@ -786,7 +805,7 @@ class WineCellarCardEditor extends HTMLElement {
         .grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
         .entity-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
         label, .field { display: grid; gap: 6px; color: var(--secondary-text-color); font-size: 12px; }
-        input, select, textarea {
+        input, textarea {
           box-sizing: border-box; width: 100%; min-height: 42px; padding: 8px 10px;
           color: var(--primary-text-color);
           background: var(--ha-card-background, var(--card-background-color));
@@ -796,7 +815,7 @@ class WineCellarCardEditor extends HTMLElement {
           min-height: 112px; resize: vertical; line-height: 1.5;
           font-family: var(--code-font-family, ui-monospace, SFMono-Regular, Consolas, monospace);
         }
-        ha-entity-picker { display: block; width: 100%; }
+        ha-entity-picker, ha-selector { display: block; width: 100%; }
         .switch-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 42px; }
         .switch-text { display: grid; gap: 3px; min-width: 0; }
         .switch-label { color: var(--primary-text-color); font-size: 14px; }
@@ -811,14 +830,8 @@ class WineCellarCardEditor extends HTMLElement {
           <div class="section-content"><div class="entity-grid">
             <label>Card name<input data-config="name" type="text"></label>
             ${this._entityPicker("status_entity", "Status entity", ["binary_sensor"])}
-            <label>
-              Language
-              <select data-config="language">
-                <option value="">Automatic (Home Assistant language)</option>
-                ${this._languageOptions()}
-              </select>
-            </label>
-            <label>Cellar illustration position<select data-config="cellar_visual_position"><option value="left">Left</option><option value="center">Center</option><option value="right">Right</option></select></label>
+            <div class="field"><span>Language</span><ha-selector data-config="language"></ha-selector></div>
+            <div class="field"><span>Cellar illustration position</span><ha-selector data-config="cellar_visual_position"></ha-selector></div>
             <div class="switch-row">
               <div class="switch-text"><span class="switch-label">Hide cellar illustration</span><span class="field-description">Hide the cellar illustration and enlarge the temperature zones.</span></div>
               <ha-switch data-config="hide_cellar_visual"></ha-switch>
@@ -850,15 +863,8 @@ class WineCellarCardEditor extends HTMLElement {
     `;
 
         this._initializeEntityPickers();
+        this._initializeSelectFields();
         this._initializeStandardFields();
-    }
-
-    // Language options are generated from WineCellarCard.STRINGS so a new
-    // language only needs to be added in one place.
-    _languageOptions() {
-        return Object.keys(WineCellarCard.STRINGS)
-            .map((code) => `<option value="${code}">${WineCellarCardEditor.LANGUAGE_NAMES[code] || code}</option>`)
-            .join("");
     }
 
     _entityPicker(key, label, domains = []) {
@@ -896,11 +902,29 @@ class WineCellarCardEditor extends HTMLElement {
         });
     }
 
+    _initializeSelectFields() {
+        this.querySelectorAll("ha-selector[data-config]").forEach((selector) => {
+            const key = selector.dataset.config;
+            const options = key === "language"
+                ? this._languageOptions()
+                : WineCellarCardEditor.SELECT_OPTIONS[key] || [];
+
+            selector.hass = this._hass;
+            selector.selector = {
+                select: {
+                    mode: "dropdown",
+                    options,
+                },
+            };
+            selector.addEventListener("value-changed", (event) => this._valueChanged(event));
+        });
+    }
+
     _initializeStandardFields() {
         this.querySelectorAll("input[data-config], textarea[data-config]").forEach((element) => {
             element.addEventListener("input", (event) => this._valueChanged(event));
         });
-        this.querySelectorAll("select[data-config], ha-switch[data-config]").forEach((element) => {
+        this.querySelectorAll("ha-switch[data-config]").forEach((element) => {
             element.addEventListener("change", (event) => this._valueChanged(event));
         });
     }
@@ -916,6 +940,12 @@ class WineCellarCardEditor extends HTMLElement {
             if (element.tagName === "HA-ENTITY-PICKER") {
                 element.hass = this._hass;
                 element.value = value ?? "";
+                return;
+            }
+            if (element.tagName === "HA-SELECTOR") {
+                element.hass = this._hass;
+                const isEmpty = value === undefined || value === null || value === "";
+                element.value = (key === "language" && isEmpty) ? WineCellarCardEditor.AUTO_LANGUAGE : (value ?? "");
                 return;
             }
             if (element.tagName === "HA-SWITCH") {
@@ -966,8 +996,10 @@ class WineCellarCardEditor extends HTMLElement {
             return;
 
         let value;
-        if (target.tagName === "HA-ENTITY-PICKER") {
+        if (target.tagName === "HA-ENTITY-PICKER" || target.tagName === "HA-SELECTOR") {
             value = event.detail?.value ?? target.value ?? "";
+            if (key === "language" && value === WineCellarCardEditor.AUTO_LANGUAGE)
+                value = "";
         } else if (target.tagName === "HA-SWITCH") {
             value = Boolean(target.checked);
         } else if (target.tagName === "TEXTAREA" && key === "mode_names") {
