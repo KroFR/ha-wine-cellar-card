@@ -14,6 +14,7 @@ A custom Lovelace card for [Home Assistant](https://www.home-assistant.io/) that
 - Configurable illustration position and hidden-state support
 - Light and Dark mode support
 - Multilingual support and auto-detection (English, French, Spanish, Italian, Portuguese, German, Dutch)
+- Visual editor: fully configurable through the Lovelace UI editor, no YAML required.
 
 ### ℹ️ Prerequisites 
 
