@@ -4,10 +4,11 @@ A custom Lovelace card for [Home Assistant](https://www.home-assistant.io/) that
 
 | Light Theme | Dark Theme |
 |---|---|
-| <img width="501" height="330" alt="image" src="https://github.com/user-attachments/assets/840be4ef-15c9-4b36-be2e-c99e067c879a" /> | <img width="501" height="330" alt="image" src="https://github.com/user-attachments/assets/4a9c36b9-6ecf-4afa-8108-4063eb94a3a3" /> |
+| <img width="503" height="331" alt="image" src="https://github.com/user-attachments/assets/3a9b9648-97eb-407f-a710-3926a6e02751" /> | <img width="501" height="330" alt="image" src="https://github.com/user-attachments/assets/b51619d9-ca54-41d4-a9cf-bcbb72c3bc3f" /> |
 
 ### ✨ Features
-- Dual-zone temperature rings with target values
+- Adaptive cellar illustration (mono-zone / dual-zone)
+- mono-zone / Dual-zone temperature rings with target values
 - Humidity, mode, and program display
 - Light toggle and error banner
 - Configurable illustration position and hidden-state support
@@ -19,7 +20,7 @@ A custom Lovelace card for [Home Assistant](https://www.home-assistant.io/) that
 This card was built to pair with the [hOn integration](https://github.com/gvigroux/hon), which exposes Haier wine cellars in Home Assistant. That said, it's not locked to that integration. As long as your entities use the same types (a binary sensor for status, sensors for temperature/humidity, etc.), the card will work with any integration that exposes them.
 
 Tested with Wine Cellar model:
-- HWS42GDAU1
+- Haier hOn HWS42GDAU1
 
 ## 📦 Installation
 
@@ -65,7 +66,7 @@ Tested with Wine Cellar model:
 | `zone1_temp_entity` / `zone2_temp_entity` | string | no | — | Zone temperature sensor |
 | `zone1_target_entity` / `zone2_target_entity` | string | no | — | Zone target temperature sensor |
 | `zone1_humidity_entity` / `zone2_humidity_entity` | string | no | — | Zone humidity sensor |
-| `zone1_min` / `zone2_min` | number | no | `5` | Minimum temperature for the ring gauge |
+| `zone1_min` / `zone2_min` | number | no | `0` | Minimum temperature for the ring gauge |
 | `zone1_max` / `zone2_max` | number | no | `20` | Maximum temperature for the ring gauge |
 
 ## 📝 Usage examples
@@ -75,7 +76,7 @@ The complete configuration, with both zones, mode mapping, and program display.
 
 | Light Theme | Dark Theme |
 |---|---|
-| <img width="501" height="330" alt="image" src="https://github.com/user-attachments/assets/840be4ef-15c9-4b36-be2e-c99e067c879a" /> | <img width="501" height="330" alt="image" src="https://github.com/user-attachments/assets/4a9c36b9-6ecf-4afa-8108-4063eb94a3a3" /> |
+| <img width="503" height="331" alt="image" src="https://github.com/user-attachments/assets/3a9b9648-97eb-407f-a710-3926a6e02751" /> | <img width="501" height="330" alt="image" src="https://github.com/user-attachments/assets/b51619d9-ca54-41d4-a9cf-bcbb72c3bc3f" /> |
 
 ```yaml
 type: custom:wine-cellar-card
@@ -94,13 +95,13 @@ zone1_label: White & Champagne
 zone1_temp_entity: sensor.wine_cellar_temperature
 zone1_target_entity: sensor.wine_cellar_selected_temperature
 zone1_humidity_entity: sensor.wine_cellar_humidity_zone_1
-zone1_min: 5
+zone1_min: O
 zone1_max: 20
 zone2_label: Red
 zone2_temp_entity: sensor.wine_cellar_temperature_zone_2
 zone2_target_entity: sensor.wine_cellar_selected_temperature_zone_2
 zone2_humidity_entity: sensor.wine_cellar_humidity_zone_2
-zone2_min: 5
+zone2_min: O
 zone2_max: 20
 cellar_visual_position: center
 ```
@@ -110,7 +111,7 @@ Only the required entity, everything else falls back to defaults.
 
 | Light Theme | Dark Theme |
 |---|---|
-| <img width="501" height="250" alt="image" src="https://github.com/user-attachments/assets/ba4705d3-9da3-4abf-a0ef-581eb4f69b22" /> | <img width="501" height="250" alt="image" src="https://github.com/user-attachments/assets/c4826f7d-e7fb-4f95-9c6e-92a6fcb9f5f7" /> |
+| <img width="482" height="249" alt="image" src="https://github.com/user-attachments/assets/eda1250b-57ca-41be-9e63-e45e1a28e069" /> | <img width="482" height="249" alt="image" src="https://github.com/user-attachments/assets/9bd9f673-246c-463c-91b9-8d634ae72213" /> |
 
 ```yaml
 type: custom:wine-cellar-card
@@ -122,7 +123,7 @@ Leave zone 2 fields empty and the card hides that panel automatically.
 
 | Light Theme | Dark Theme |
 |---|---|
-| <img width="501" height="250" alt="image" src="https://github.com/user-attachments/assets/27223180-5b8f-4145-b272-b61f3aeca8bc" /> | <img width="501" height="250" alt="image" src="https://github.com/user-attachments/assets/e2f55a94-cdf5-499a-847a-a5f3cad52590" /> |
+| <img width="503" height="249" alt="image" src="https://github.com/user-attachments/assets/893bd615-23b5-471b-8f03-a2fb6adcbdba" /> | <img width="503" height="249" alt="image" src="https://github.com/user-attachments/assets/ad0db335-b20b-40b9-a9c8-0fdc53f2181c" /> |
 
 ```yaml
 type: custom:wine-cellar-card
@@ -141,7 +142,7 @@ Hide the cellar illustration to give more room to the temperature rings, ideal f
 
 | Light Theme | Dark Theme |
 |---|---|
-| <img width="501" height="250" alt="image" src="https://github.com/user-attachments/assets/0f867418-5f91-4525-9b9b-595b38e77832" /> | <img width="501" height="250" alt="image" src="https://github.com/user-attachments/assets/0175e388-0f7f-4f58-8ae1-cc824a939be3" /> |
+| <img width="503" height="249" alt="image" src="https://github.com/user-attachments/assets/0d04051a-67d2-40be-ba5f-4df24aaa5ae4" /> | <img width="503" height="249" alt="image" src="https://github.com/user-attachments/assets/a5df4766-c98f-4ec3-8dd6-346dbcf619a6" /> |
 
 ```yaml
 type: custom:wine-cellar-card
@@ -149,11 +150,7 @@ status_entity: binary_sensor.wine_cellar_status
 zone1_temp_entity: sensor.wine_cellar_temperature
 zone1_target_entity: sensor.wine_cellar_selected_temperature
 zone1_humidity_entity: sensor.wine_cellar_humidity_zone_1
-zone1_min: 5
-zone1_max: 20
 zone2_temp_entity: sensor.wine_cellar_temperature_zone_2
-zone2_min: 5
-zone2_max: 20
 zone2_target_entity: sensor.wine_cellar_selected_temperature_zone_2
 zone2_humidity_entity: sensor.wine_cellar_humidity_zone_2
 hide_cellar_visual: true
@@ -164,7 +161,7 @@ Move the illustration to the right side and force French regardless of your Home
 
 | Light Theme | Dark Theme |
 |---|---|
-| <img width="501" height="250" alt="image" src="https://github.com/user-attachments/assets/14a8ed62-ebeb-4992-bbcc-e4a94209583b" /> | <img width="501" height="250" alt="image" src="https://github.com/user-attachments/assets/9d6cd1a5-64f9-4fef-a8d6-c75088e2fa2c" /> |
+| <img width="502" height="250" alt="image" src="https://github.com/user-attachments/assets/861b7b3d-939d-48f3-9d0e-f5c64a9e811c" /> | <img width="502" height="250" alt="image" src="https://github.com/user-attachments/assets/aa91f693-0c49-4bf6-a650-e9a507afd6fa" /> |
 
 ```yaml
 type: custom:wine-cellar-card
@@ -172,11 +169,7 @@ status_entity: binary_sensor.wine_cellar_status
 zone1_temp_entity: sensor.wine_cellar_temperature
 zone1_target_entity: sensor.wine_cellar_selected_temperature
 zone1_humidity_entity: sensor.wine_cellar_humidity_zone_1
-zone1_min: 5
-zone1_max: 20
 zone2_temp_entity: sensor.wine_cellar_temperature_zone_2
-zone2_min: 5
-zone2_max: 20
 zone2_target_entity: sensor.wine_cellar_selected_temperature_zone_2
 zone2_humidity_entity: sensor.wine_cellar_humidity_zone_2
 hide_cellar_visual: false
