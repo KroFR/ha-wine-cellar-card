@@ -76,7 +76,7 @@ The complete configuration, with both zones, mode mapping, and program display.
 
 | Light Theme | Dark Theme |
 |---|---|
-| <img width="503" height="331" alt="image" src="https://github.com/user-attachments/assets/3a9b9648-97eb-407f-a710-3926a6e02751" /> | <img width="501" height="330" alt="image" src="https://github.com/user-attachments/assets/b51619d9-ca54-41d4-a9cf-bcbb72c3bc3f" /> |
+| <img width="504" height="330" alt="image" src="https://github.com/user-attachments/assets/d2f39b3b-34fc-427b-b498-ec4db1fd7b51" /> | <img width="505" height="332" alt="image" src="https://github.com/user-attachments/assets/b0416e14-4047-42da-b587-a4594b264831" /> |
 
 ```yaml
 type: custom:wine-cellar-card
