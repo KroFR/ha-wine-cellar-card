@@ -20,7 +20,8 @@ A custom Lovelace card for [Home Assistant](https://www.home-assistant.io/) that
 
 This card was built to pair with the [hOn integration](https://github.com/gvigroux/hon), which exposes Haier wine cellars in Home Assistant. That said, it's not locked to that integration. As long as your entities use the same types (a binary sensor for status, sensors for temperature/humidity, etc.), the card will work with any integration that exposes them.
 
-Tested with Wine Cellar model:
+## 🧪 Model tested
+
 - Haier hOn HWS42GDAU1
 
 ## 📦 Installation
