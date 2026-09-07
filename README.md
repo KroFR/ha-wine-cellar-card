@@ -97,13 +97,13 @@ zone1_label: White & Champagne
 zone1_temp_entity: sensor.wine_cellar_temperature
 zone1_target_entity: sensor.wine_cellar_selected_temperature
 zone1_humidity_entity: sensor.wine_cellar_humidity_zone_1
-zone1_min: O
+zone1_min: 0
 zone1_max: 20
 zone2_label: Red
 zone2_temp_entity: sensor.wine_cellar_temperature_zone_2
 zone2_target_entity: sensor.wine_cellar_selected_temperature_zone_2
 zone2_humidity_entity: sensor.wine_cellar_humidity_zone_2
-zone2_min: O
+zone2_min: 0
 zone2_max: 20
 cellar_visual_position: center
 ```
