@@ -10,7 +10,7 @@ A custom Lovelace card for [Home Assistant](https://www.home-assistant.io/) that
 - Adaptive cellar illustration (mono-zone / dual-zone)
 - mono-zone / Dual-zone temperature rings with target values
 - Humidity, mode, and program display
-- Light toggle and error banner
+- Light status and error banner
 - Configurable illustration position and hidden-state support
 - Light and Dark mode support
 - Multilingual support and auto-detection (English, French, Spanish, Italian, Portuguese, German, Dutch)
