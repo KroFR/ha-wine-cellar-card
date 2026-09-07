@@ -175,9 +175,6 @@ class WineCellarCard extends HTMLElement {
         };
     }
 
-    // Native display name for a language code (e.g. "de" -> "Deutsch"),
-    // used by the editor to auto-build the Language dropdown from STRINGS.
-    // Falls back to the raw code if Intl.DisplayNames is unavailable.
     static languageDisplayName(code) {
         try {
             const displayNames = new Intl.DisplayNames([code], {
@@ -306,9 +303,6 @@ class WineCellarCard extends HTMLElement {
         return `${(safeFraction * circumference).toFixed(1)} ${circumference.toFixed(1)}`;
     }
 
-    // A zone is considered "configured" as soon as at least one of its
-    // entities is set. Used both to decide whether to show the zone panel
-    // and to pick the matching cellar illustration (see _build()).
     _zoneConfigured(zone) {
         const config = this._config;
         return Boolean(
@@ -317,16 +311,12 @@ class WineCellarCard extends HTMLElement {
             config[`zone${zone}_humidity_entity`]);
     }
 
-    // Formats a single zone's live temperature for the illustration's
-    // digital display: "12.0°" when available, "N/A" otherwise.
     _displayTemp(zone, isOn) {
         const tempEntity = this._config[`zone${zone}_temp_entity`];
         const temp = tempEntity ? this._num(tempEntity) : null;
         return isOn && temp !== null ? `${this._fmtNum(temp, 1)}°` : "N/A";
     }
 
-    // Bottle illustration used once BOTH zones are configured: two racks
-    // (6 small bottles + 6 small bottles) split by the "DUAL SPACE" divider.
     _dualZoneBottlesMarkup() {
         return `
       <g>
@@ -358,9 +348,6 @@ class WineCellarCard extends HTMLElement {
     `;
     }
 
-    // Bottle illustration used by default (zero or one zone configured):
-    // no divider, a single rack of bottles spread across the full
-    // interior height.
     _singleZoneBottlesMarkup() {
         const columns = [18, 30, 42, 54, 66, 78];
         const rows = [38, 60, 82, 104, 126];
@@ -368,8 +355,6 @@ class WineCellarCard extends HTMLElement {
         const radius = 4.3;
 
         const circles = rows.map((y, rowIndex) => {
-            // Alternate the color order per row for a "brick" look, like
-            // the two racks of the dual-zone illustration already do.
             const colors = rowIndex % 2 === 0 ? palette : [...palette].slice().reverse();
             return columns.map((x, colIndex) =>
 `<circle cx="${x}" cy="${y}" r="${radius}" fill="${colors[colIndex]}"/>`).join("");
@@ -378,10 +363,6 @@ class WineCellarCard extends HTMLElement {
         return `<g>${circles}</g>`;
     }
 
-    // Small digital display near the top of the illustration. In mono-zone
-    // mode it's a narrow display showing one temperature; in dual-zone mode
-    // it's widened to fit both zones' temperatures side by side. The actual
-    // live values are filled in by _update() via the "cvDisplayText" node.
     _cellarDisplayMarkup(dualZoneVisual) {
         if (dualZoneVisual) {
             return `
@@ -402,10 +383,6 @@ class WineCellarCard extends HTMLElement {
             mode: "open"
         });
 
-        // Default illustration is the single-zone layout. It only switches
-        // to the dual-zone layout once BOTH zones have an entity configured.
-        // Cached on the instance so _update() can reuse it without having
-        // to recompute or guess which layout is currently rendered.
         const dualZoneVisual = this._zoneConfigured(1) && this._zoneConfigured(2);
         this._dualZoneVisual = dualZoneVisual;
 
@@ -430,10 +407,14 @@ class WineCellarCard extends HTMLElement {
           width: 44px; height: 44px; flex-shrink: 0;
           border: 1px solid var(--divider-color);
           border-radius: 14px;
-          background: var(--ha-card-background, var(--card-background-color));
+          background: #f4f6f8;
           box-shadow: 0 2px 6px rgba(0,0,0,.15);
         }
         .h-icon ha-icon { --mdc-icon-size: 24px; color: #7a2038; }
+        .wrap.dark-mode .h-icon {
+          background: var(--secondary-background-color);
+          box-shadow: 0 2px 8px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.06);
+        }
         .h-title {
           flex: 0 1 auto; min-width: 56px;
           overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
@@ -460,13 +441,20 @@ class WineCellarCard extends HTMLElement {
           width: 35px; height: 35px; flex-shrink: 0;
           border: 1px solid var(--divider-color); border-radius: 12px;
           color: var(--secondary-text-color);
-          background: var(--ha-card-background, var(--card-background-color));
+          background: #f4f6f8;
           cursor: pointer; transition: transform .12s ease;
+        }
+        .wrap.dark-mode .h-btn {
+          background: var(--secondary-background-color);
+          box-shadow: 0 2px 8px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.06);
         }
         .h-btn:active { transform: scale(.94); }
         .h-btn ha-icon { --mdc-icon-size: 19px; }
         .h-btn.on {
           color: var(--primary-color); border-color: var(--primary-color);
+          background: rgba(var(--rgb-primary-color,3,169,244),.12);
+        }
+        .wrap.dark-mode .h-btn.on {
           background: rgba(var(--rgb-primary-color,3,169,244),.12);
         }
         .error-banner {
@@ -489,7 +477,10 @@ class WineCellarCard extends HTMLElement {
           flex: 1 1 0; min-width: 0; padding: 10px 8px;
           text-align: center; border: 1px solid var(--divider-color);
           border-radius: 12px;
-          background: var(--ha-card-background, var(--card-background-color));
+          background: #f6f8fa;
+        }
+        .wrap.dark-mode .zone-panel {
+          background: var(--secondary-background-color);
         }
         .zone-label {
           margin-bottom: 6px; color: var(--secondary-text-color);
@@ -514,7 +505,10 @@ class WineCellarCard extends HTMLElement {
           display: grid; grid-template-columns: repeat(3,1fr);
           margin-top: 12px; padding: 12px 16px;
           border: 1px solid var(--divider-color); border-radius: 12px;
-          background: var(--ha-card-background, var(--card-background-color));
+          background: #f6f8fa;
+        }
+        .wrap.dark-mode .panel {
+          background: var(--secondary-background-color);
         }
         .info-item { min-width: 0; padding: 0 10px; border-left: 1px solid var(--divider-color); cursor: pointer; }
         .info-item:first-child { border-left: 0; padding-left: 0; }
@@ -669,6 +663,7 @@ class WineCellarCard extends HTMLElement {
         const noData = !status || ["unknown", "unavailable"].includes(status.state);
         const isOn = !noData && String(status.state).toLowerCase() === "on";
 
+        nodes.wrap.classList.toggle("dark-mode", Boolean(this._hass?.themes?.darkMode));
         nodes.wrap.classList.toggle("on", isOn);
         nodes.wrap.classList.toggle("off", !isOn && !noData);
         nodes.wrap.classList.toggle("nodata", noData);
@@ -699,8 +694,6 @@ class WineCellarCard extends HTMLElement {
 
         nodes.cvGlow.setAttribute("opacity", isOn && lightOn ? ".55" : (isOn ? ".15" : "0"));
 
-        // Digital display on the illustration: one live temperature in
-        // mono-zone mode, both zones' live temperatures in dual-zone mode.
         if (this._dualZoneVisual) {
             nodes.cvDisplayText.textContent = `${this._displayTemp(1, isOn)} / ${this._displayTemp(2, isOn)}`;
         } else {
