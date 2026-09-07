@@ -4,7 +4,7 @@ A custom Lovelace card for [Home Assistant](https://www.home-assistant.io/) that
 
 | Light Theme | Dark Theme |
 |---|---|
-| <img width="503" height="331" alt="image" src="https://github.com/user-attachments/assets/3a9b9648-97eb-407f-a710-3926a6e02751" /> | <img width="501" height="330" alt="image" src="https://github.com/user-attachments/assets/b51619d9-ca54-41d4-a9cf-bcbb72c3bc3f" /> |
+| <img width="500" height="328" alt="image" src="https://github.com/user-attachments/assets/8fc2d94e-2cc0-4119-a867-ff2b05f59eff" /> | <img width="500" height="328" alt="image" src="https://github.com/user-attachments/assets/5636f2a9-da36-47e8-a9ad-085ddd6d8f84" /> |
 
 ### ✨ Features
 - Adaptive cellar illustration (mono-zone / dual-zone)
@@ -74,11 +74,11 @@ This card was built to pair with the [hOn integration](https://github.com/gvigro
 ## 📝 Usage examples
 
 ### Full dual-zone setup
-The complete configuration, with both zones, mode mapping, and program display.
+The complete configuration, with both zones, custom zone name, mode mapping, and program display.
 
 | Light Theme | Dark Theme |
 |---|---|
-| <img width="504" height="330" alt="image" src="https://github.com/user-attachments/assets/d2f39b3b-34fc-427b-b498-ec4db1fd7b51" /> | <img width="505" height="332" alt="image" src="https://github.com/user-attachments/assets/b0416e14-4047-42da-b587-a4594b264831" /> |
+| <img width="500" height="328" alt="image" src="https://github.com/user-attachments/assets/47d93ee5-4a53-453e-be99-bae3c36113e8" /> | <img width="500" height="328" alt="image" src="https://github.com/user-attachments/assets/6cf6667f-eb18-4009-a12f-30e609f6edb1" /> |
 
 ```yaml
 type: custom:wine-cellar-card
@@ -113,7 +113,7 @@ Only the required entity, everything else falls back to defaults.
 
 | Light Theme | Dark Theme |
 |---|---|
-| <img width="482" height="249" alt="image" src="https://github.com/user-attachments/assets/eda1250b-57ca-41be-9e63-e45e1a28e069" /> | <img width="482" height="249" alt="image" src="https://github.com/user-attachments/assets/9bd9f673-246c-463c-91b9-8d634ae72213" /> |
+| <img width="500" height="249" alt="image" src="https://github.com/user-attachments/assets/ebc51582-91f2-476e-8313-9fca18ed18c2" /> | <img width="500" height="249" alt="image" src="https://github.com/user-attachments/assets/eb40d685-12e6-4450-9af5-c5026a9517b2" /> |
 
 ```yaml
 type: custom:wine-cellar-card
@@ -125,7 +125,7 @@ Leave zone 2 fields empty and the card hides that panel automatically.
 
 | Light Theme | Dark Theme |
 |---|---|
-| <img width="503" height="249" alt="image" src="https://github.com/user-attachments/assets/893bd615-23b5-471b-8f03-a2fb6adcbdba" /> | <img width="503" height="249" alt="image" src="https://github.com/user-attachments/assets/ad0db335-b20b-40b9-a9c8-0fdc53f2181c" /> |
+| <img width="500" height="249" alt="image" src="https://github.com/user-attachments/assets/0c9570e4-33c6-432d-8355-adc35d1af16b" /> | <img width="500" height="249" alt="image" src="https://github.com/user-attachments/assets/712ae04d-1990-472c-bb1f-c8387df34e79" /> |
 
 ```yaml
 type: custom:wine-cellar-card
@@ -144,7 +144,8 @@ Hide the cellar illustration to give more room to the temperature rings, ideal f
 
 | Light Theme | Dark Theme |
 |---|---|
-| <img width="503" height="249" alt="image" src="https://github.com/user-attachments/assets/0d04051a-67d2-40be-ba5f-4df24aaa5ae4" /> | <img width="503" height="249" alt="image" src="https://github.com/user-attachments/assets/a5df4766-c98f-4ec3-8dd6-346dbcf619a6" /> |
+| <img width="500" height="262" alt="image" src="https://github.com/user-attachments/assets/5836df75-74d1-48ab-81e3-62326edc3823" /> | <img width="500" height="262" alt="image" src="https://github.com/user-attachments/assets/620660b2-06b5-4f36-a23f-0cb179b66ec6" />
+ |
 
 ```yaml
 type: custom:wine-cellar-card
@@ -163,7 +164,7 @@ Move the illustration to the right side and force French regardless of your Home
 
 | Light Theme | Dark Theme |
 |---|---|
-| <img width="502" height="250" alt="image" src="https://github.com/user-attachments/assets/861b7b3d-939d-48f3-9d0e-f5c64a9e811c" /> | <img width="502" height="250" alt="image" src="https://github.com/user-attachments/assets/aa91f693-0c49-4bf6-a650-e9a507afd6fa" /> |
+| <img width="500" height="247" alt="image" src="https://github.com/user-attachments/assets/44b9232c-7eb4-4485-8a6c-7e3661379099" /> | <img width="500" height="247" alt="image" src="https://github.com/user-attachments/assets/32ade07b-2138-4ff0-84b8-a7f10e98281f" /> |
 
 ```yaml
 type: custom:wine-cellar-card
