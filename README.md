@@ -1,3 +1,9 @@
+[![HACS Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://hacs.xyz/)
+[![GitHub Release](https://img.shields.io/github/v/release/KroFR/ha-wine-cellar-card)](https://github.com/KroFR/ha-wine-cellar-card/releases)
+[![Static Badge](https://img.shields.io/badge/Home_Assistant-2024.1+-blue)](https://www.home-assistant.io/)
+[![HACS Validation](https://github.com/KroFR/ha-wine-cellar-card/actions/workflows/hacs.yaml/badge.svg)](https://github.com/KroFR/ha-wine-cellar-card/actions/workflows/hacs.yaml)
+[![License](https://img.shields.io/github/license/KroFR/ha-wine-cellar-card)](https://github.com/KroFR/ha-wine-cellar-card/blob/main/LICENSE)
+
 # 🍷 Wine Cellar Card
 
 A custom Lovelace card for [Home Assistant](https://www.home-assistant.io/) that displays your **Haier hOn wine cellar** at a glance. It shows temperature and humidity for two independent zones, plus mode, program, light status, and error alerts.
@@ -179,7 +185,3 @@ hide_cellar_visual: false
 cellar_visual_position: right
 language: fr
 ```
-
-## 📄 License
-
-[<img width="78" height="20" alt="image" src="https://github.com/user-attachments/assets/c14c93d7-50c2-4726-9a47-77f6c466e5b5" />](https://github.com/KroFR/hon-wine-cellar-ha-card/blob/main/LICENSE)
