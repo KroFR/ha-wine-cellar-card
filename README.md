@@ -30,7 +30,7 @@ This card was built to pair with the [hOn integration](https://github.com/gvigro
 1. Open **HACS** in Home Assistant.
 2. Click on the three dots in the top right corner
 3. Select "Custom repositories"
-4. Add this repository URL `https://github.com/KroFR/hon-wine-cellar-ha-card`
+4. Add this repository URL `https://github.com/KroFR/ha-wine-cellar-card`
 5. Select "Dashboard"
 6. Click "Add"
 7. Search for "Wine Cellar Card" and install it
