@@ -2,4 +2,5 @@
   "name": "Wine Cellar Card",
   "filename": "ha-wine-cellar-card.js",
   "render_readme": true
+  "content_in_root": false
 }
