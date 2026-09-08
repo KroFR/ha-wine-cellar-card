@@ -6,7 +6,7 @@ A custom Lovelace card for [Home Assistant](https://www.home-assistant.io/) that
 |---|---|
 | <img width="500" height="328" alt="image" src="https://github.com/user-attachments/assets/8fc2d94e-2cc0-4119-a867-ff2b05f59eff" /> | <img width="500" height="328" alt="image" src="https://github.com/user-attachments/assets/5636f2a9-da36-47e8-a9ad-085ddd6d8f84" /> |
 
-### ✨ Features
+## ✨ Features
 - Adaptive cellar illustration (mono-zone / dual-zone)
 - Mono-zone / Dual-zone temperature rings with target values
 - Humidity, mode, and program display
@@ -16,7 +16,7 @@ A custom Lovelace card for [Home Assistant](https://www.home-assistant.io/) that
 - Multilingual support and auto-detection (English, French, Spanish, Italian, Portuguese, German, Dutch)
 - Visual editor: fully configurable through the Lovelace UI editor, no YAML required.
 
-### ℹ️ Prerequisites 
+## ℹ️ Prerequisites 
 
 This card was built to pair with the [hOn integration](https://github.com/gvigroux/hon), which exposes Haier wine cellars in Home Assistant. That said, it's not locked to that integration. As long as your entities use the same types (a binary sensor for status, sensors for temperature/humidity, etc.), the card will work with any integration that exposes them.
 
