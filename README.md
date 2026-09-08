@@ -1,8 +1,8 @@
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://hacs.xyz/)
-[![GitHub Release](https://img.shields.io/github/v/release/KroFR/ha-wine-cellar-card)](https://github.com/KroFR/ha-wine-cellar-card/releases)
+[![GitHub Release](https://img.shields.io/github/v/release/KroFR/wine-cellar-ha-card)](https://github.com/KroFR/wine-cellar-ha-card/releases)
 [![Static Badge](https://img.shields.io/badge/Home_Assistant-2024.1+-blue)](https://www.home-assistant.io/)
-[![HACS Validation](https://github.com/KroFR/ha-wine-cellar-card/actions/workflows/hacs.yaml/badge.svg)](https://github.com/KroFR/ha-wine-cellar-card/actions/workflows/hacs.yaml)
-[![License](https://img.shields.io/github/license/KroFR/ha-wine-cellar-card)](https://github.com/KroFR/ha-wine-cellar-card/blob/main/LICENSE)
+[![HACS Validation](https://github.com/KroFR/wine-cellar-ha-card/actions/workflows/hacs.yaml/badge.svg)](https://github.com/KroFR/wine-cellar-ha-card/actions/workflows/hacs.yaml)
+[![License](https://img.shields.io/github/license/KroFR/wine-cellar-ha-card)](https://github.com/KroFR/wine-cellar-ha-card/blob/main/LICENSE)
 
 # 🍷 Wine Cellar Card
 
@@ -36,7 +36,7 @@ This card was built to pair with the [hOn integration](https://github.com/gvigro
 1. Open **HACS** in Home Assistant.
 2. Click on the three dots in the top right corner
 3. Select "Custom repositories"
-4. Add this repository URL `https://github.com/KroFR/ha-wine-cellar-card`
+4. Add this repository URL `https://github.com/KroFR/wine-cellar-ha-card`
 5. Select "Dashboard"
 6. Click "Add"
 7. Search for "Wine Cellar Card" and install it
