@@ -185,3 +185,6 @@ hide_cellar_visual: false
 cellar_visual_position: right
 language: fr
 ```
+## 📄 License
+
+[![License](https://img.shields.io/github/license/KroFR/wine-cellar-ha-card)](https://github.com/KroFR/wine-cellar-ha-card/blob/main/LICENSE)
