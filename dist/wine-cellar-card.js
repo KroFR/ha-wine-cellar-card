@@ -804,6 +804,11 @@ class WineCellarCardEditor extends HTMLElement {
         zone2: "mdi:numeric-2-circle-outline",
         extra: "mdi:puzzle-outline",
     };
+    // Maps text-input config keys to the matching key in WineCellarCard.STRINGS,
+    // so their default value can be shown as a placeholder instead of a pre-filled value.
+    static PLACEHOLDER_TEXT_KEYS = {
+        name: "name",
+    };
 
     constructor() {
         super();
@@ -848,6 +853,24 @@ class WineCellarCardEditor extends HTMLElement {
                     label: WineCellarCard.languageDisplayName(code),
                 })),
         ];
+    }
+
+    // Mirrors WineCellarCard#_t so placeholders match the strings the card will actually display.
+    _defaultStrings() {
+        const strings = WineCellarCard.STRINGS;
+        const configured = String(this._config?.language || "").toLowerCase();
+        if (configured && strings[configured])
+            return strings[configured];
+        const profileLanguage = (
+            this._hass?.locale?.language || this._hass?.language || "").toLowerCase();
+        if (profileLanguage) {
+            if (strings[profileLanguage])
+                return strings[profileLanguage];
+            const base = profileLanguage.split(/[-_]/)[0];
+            if (strings[base])
+                return strings[base];
+        }
+        return strings.en;
     }
 
     _sectionSummary(icon, title) {
@@ -1045,6 +1068,10 @@ class WineCellarCardEditor extends HTMLElement {
                 }
                 return;
             }
+
+            const placeholderKey = WineCellarCardEditor.PLACEHOLDER_TEXT_KEYS[key];
+            if (placeholderKey)
+                element.placeholder = this._defaultStrings()[placeholderKey];
 
             if (!this._focusedElements.has(element))
                 element.value = value ?? "";
