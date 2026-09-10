@@ -7,6 +7,8 @@
  *
  */
 
+const CARD_VERSION = "1.0.10";
+
 class WineCellarCard extends HTMLElement {
     static STRINGS = {
         en: {
@@ -796,6 +798,13 @@ class WineCellarCardEditor extends HTMLElement {
         cellar_visual_position: WineCellarCard.DEFAULTS.cellar_visual_position,
     };
 
+    static SECTION_ICONS = {
+        general: "mdi:cog-outline",
+        zone1: "mdi:numeric-1-circle-outline",
+        zone2: "mdi:numeric-2-circle-outline",
+        extra: "mdi:puzzle-outline",
+    };
+
     constructor() {
         super();
         this._rendered = false;
@@ -841,7 +850,12 @@ class WineCellarCardEditor extends HTMLElement {
         ];
     }
 
+    _sectionSummary(icon, title) {
+        return `<summary><span class="section-title"><ha-icon icon="${icon}"></ha-icon>${title}</span></summary>`;
+    }
+
     _render() {
+        const icons = WineCellarCardEditor.SECTION_ICONS;
         this.innerHTML = `
       <style>
         .editor { display: grid; gap: 12px; padding: 8px 0; }
@@ -858,6 +872,8 @@ class WineCellarCardEditor extends HTMLElement {
           list-style: none; user-select: none;
         }
         summary::-webkit-details-marker { display: none; }
+        .section-title { display: flex; align-items: center; gap: 10px; min-width: 0; }
+        .section-title ha-icon { --mdc-icon-size: 20px; color: var(--secondary-text-color); flex-shrink: 0; }
         summary::after {
           content: ""; width: 8px; height: 8px; flex-shrink: 0;
           border-right: 2px solid var(--secondary-text-color);
@@ -891,7 +907,7 @@ class WineCellarCardEditor extends HTMLElement {
 
       <div class="editor">
         <details class="section" open>
-          <summary>General</summary>
+          ${this._sectionSummary(icons.general, "General")}
           <div class="section-content"><div class="entity-grid">
             <label>Card name<input data-config="name" type="text"></label>
             ${this._entityPicker("status_entity", "Status entity", ["binary_sensor"])}
@@ -908,7 +924,7 @@ class WineCellarCardEditor extends HTMLElement {
         ${this._zoneSection(2)}
 
         <details class="section">
-          <summary>Additional entities</summary>
+          ${this._sectionSummary(icons.extra, "Additional entities")}
           <div class="section-content"><div class="entity-grid">
             ${this._entityPicker("error_entity", "Error entity", ["sensor"])}
             ${this._entityPicker("light_entity", "Light entity", ["binary_sensor", "light", "switch"])}
@@ -938,9 +954,10 @@ class WineCellarCardEditor extends HTMLElement {
 
     _zoneSection(zone) {
         const defaults = WineCellarCard.DEFAULTS;
+        const icon = WineCellarCardEditor.SECTION_ICONS[`zone${zone}`];
         return `
       <details class="section">
-        <summary>Zone ${zone}</summary>
+        ${this._sectionSummary(icon, `Zone ${zone}`)}
         <div class="section-content">
           <div class="entity-grid">
             <label>Label<input data-config="zone${zone}_label" type="text" placeholder="ZONE ${zone}"></label>
@@ -1123,5 +1140,8 @@ if (!window.customCards.some((card) => card.type === "wine-cellar-card")) {
         name: "Wine Cellar Card",
         description: "Dual-zone wine cellar card with temperature, humidity, light, mode and errors",
         preview: true,
+		documentationURL: "https://github.com/KroFR/wine-cellar-ha-card",
     });
 }
+
+console.info(`%c 🍷 WINE-CELLAR-CARD %c v${CARD_VERSION} `, "color: white; background: #7a2038; font-weight: 700;", "color: #7a2038; background: white; font-weight: 700;");
