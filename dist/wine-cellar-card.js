@@ -7,7 +7,7 @@
  *
  */
 
-const CARD_VERSION = "1.0.10";
+const CARD_VERSION = "1.0.11";
 
 class WineCellarCard extends HTMLElement {
     static STRINGS = {
@@ -256,12 +256,42 @@ class WineCellarCard extends HTMLElement {
         return Number.isFinite(value) ? value : null;
     }
 
+    static NUMBER_SEPARATORS = {
+        comma_decimal: { group: ",", decimal: "." },
+        decimal_comma: { group: ".", decimal: "," },
+        space_comma: { group: " ", decimal: "," },
+    };
+
     _fmtNum(value, digits = 1) {
         const number = Number.parseFloat(value);
         if (!Number.isFinite(number))
             return null;
 
-        return new Intl.NumberFormat(this._hass?.locale?.language || "en", {
+        const numberFormat = this._hass?.locale?.number_format;
+
+        // "None": raw number, no thousands separator, dot as decimal point.
+        if (numberFormat === "none")
+            return number.toFixed(digits);
+
+        // "System": defer entirely to the browser/OS locale.
+        if (numberFormat === "system") {
+            return new Intl.NumberFormat(undefined, {
+                minimumFractionDigits: digits,
+                maximumFractionDigits: digits,
+            }).format(number);
+        }
+
+        // comma_decimal / decimal_comma / space_comma: build the string from the separators the option name itself describes.
+        const separators = WineCellarCard.NUMBER_SEPARATORS[numberFormat];
+        if (separators) {
+            const isNegative = number < 0;
+            const [intPart, decPart] = Math.abs(number).toFixed(digits).split(".");
+            const grouped = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, separators.group);
+            return `${isNegative ? "-" : ""}${grouped}${decPart ? separators.decimal + decPart : ""}`;
+        }
+
+        // Default ("language", or unset): follow the interface's own language, untouched.
+        return new Intl.NumberFormat(this._hass?.locale?.language, {
             minimumFractionDigits: digits,
             maximumFractionDigits: digits,
         }).format(number);
@@ -804,8 +834,7 @@ class WineCellarCardEditor extends HTMLElement {
         zone2: "mdi:numeric-2-circle-outline",
         extra: "mdi:puzzle-outline",
     };
-    // Maps text-input config keys to the matching key in WineCellarCard.STRINGS,
-    // so their default value can be shown as a placeholder instead of a pre-filled value.
+
     static PLACEHOLDER_TEXT_KEYS = {
         name: "name",
     };
@@ -855,7 +884,6 @@ class WineCellarCardEditor extends HTMLElement {
         ];
     }
 
-    // Mirrors WineCellarCard#_t so placeholders match the strings the card will actually display.
     _defaultStrings() {
         const strings = WineCellarCard.STRINGS;
         const configured = String(this._config?.language || "").toLowerCase();
@@ -1167,7 +1195,7 @@ if (!window.customCards.some((card) => card.type === "wine-cellar-card")) {
         name: "Wine Cellar Card",
         description: "Dual-zone wine cellar card with temperature, humidity, light, mode and errors",
         preview: true,
-		documentationURL: "https://github.com/KroFR/wine-cellar-ha-card",
+        documentationURL: "https://github.com/KroFR/wine-cellar-ha-card",
     });
 }
 
